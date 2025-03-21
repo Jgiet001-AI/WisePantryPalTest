@@ -2,21 +2,19 @@ import { useState, useEffect } from "react";
 import { 
   ShoppingCart, AlertCircle, ChevronDown, ChevronUp, TrendingDown, TrendingUp, BarChart3, Store, ExternalLink
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
+import {
+  Container,
+  Text,
+  Flex,
+  Divider,
+  Button,
+  Card,
+  colors,
+  spacing,
+  shadows,
+  borderRadius,
+} from '../ui/KitchenStoriesDesign';
+import { useNavigate } from "react-router-dom";
 
 // Mock data for price comparison
 const mockItems = [
@@ -98,372 +96,310 @@ const mockItems = [
 ];
 
 export default function PriceComparison() {
+  const navigate = useNavigate();
   const [items, setItems] = useState(mockItems);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "stores">("asc");
   const [showPriceDrops, setShowPriceDrops] = useState(false);
-  const [activePriceAlerts, setActivePriceAlerts] = useState<number[]>([1, 3, 5]);
+  const [activePriceAlerts, setActivePriceAlerts] = useState<number[]>([1, 3]);
 
   // Filter and sort items
   const filteredItems = items
-    .filter(item => 
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (!showPriceDrops || item.currentPrice < item.previousPrice)
-    )
+    .filter(item => {
+      // Handle search query
+      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      // Handle price drop filter
+      const isPriceDrop = showPriceDrops ? item.currentPrice < item.previousPrice : true;
+      
+      return matchesSearch && isPriceDrop;
+    })
     .sort((a, b) => {
-      if (sortOrder === "asc") {
-        return a.currentPrice - b.currentPrice;
-      } else if (sortOrder === "desc") {
-        return b.currentPrice - a.currentPrice;
-      } else {
-        // Sort by best store price
-        const aLowestPrice = Math.min(...a.stores.map(s => s.price));
-        const bLowestPrice = Math.min(...b.stores.map(s => s.price));
-        return aLowestPrice - bLowestPrice;
+      switch (sortOrder) {
+        case "asc":
+          return a.currentPrice - b.currentPrice;
+        case "desc":
+          return b.currentPrice - a.currentPrice;
+        case "stores":
+          const aMinPrice = Math.min(...a.stores.map((s: any) => s.price));
+          const bMinPrice = Math.min(...b.stores.map((s: any) => s.price));
+          return aMinPrice - bMinPrice;
+        default:
+          return 0;
       }
     });
-
-  // Toggle price alert
-  const togglePriceAlert = (itemId: number) => {
-    setItems(items.map(item => 
-      item.id === itemId 
-        ? { ...item, onWatchlist: !item.onWatchlist } 
-        : item
-    ));
-    
-    if (activePriceAlerts.includes(itemId)) {
-      setActivePriceAlerts(activePriceAlerts.filter(id => id !== itemId));
-    } else {
-      setActivePriceAlerts([...activePriceAlerts, itemId]);
-    }
-  };
 
   // View item details
   const viewItemDetails = (item: any) => {
     setSelectedItem(item);
   };
 
-  // Calculate price trend indicators
+  // Toggle price alert
+  const togglePriceAlert = (id: number) => {
+    if (activePriceAlerts.includes(id)) {
+      setActivePriceAlerts(activePriceAlerts.filter(itemId => itemId !== id));
+      
+      setItems(items.map(item => 
+        item.id === id ? { ...item, onWatchlist: false } : item
+      ));
+      
+      if (selectedItem && selectedItem.id === id) {
+        setSelectedItem({ ...selectedItem, onWatchlist: false });
+      }
+    } else {
+      setActivePriceAlerts([...activePriceAlerts, id]);
+      
+      setItems(items.map(item => 
+        item.id === id ? { ...item, onWatchlist: true } : item
+      ));
+      
+      if (selectedItem && selectedItem.id === id) {
+        setSelectedItem({ ...selectedItem, onWatchlist: true });
+      }
+    }
+  };
+
+  // Helper function to get price trend indicators
   const getPriceTrend = (current: number, previous: number) => {
-    const percentChange = ((current - previous) / previous) * 100;
-    if (percentChange < -5) return { icon: <TrendingDown className="h-4 w-4 text-green-500" />, text: "Significant drop", color: "text-green-500" };
-    if (percentChange < 0) return { icon: <TrendingDown className="h-4 w-4 text-emerald-500" />, text: "Price drop", color: "text-emerald-500" };
-    if (percentChange === 0) return { icon: <BarChart3 className="h-4 w-4 text-gray-500" />, text: "Stable", color: "text-gray-500" };
-    if (percentChange < 5) return { icon: <TrendingUp className="h-4 w-4 text-amber-500" />, text: "Slight increase", color: "text-amber-500" };
-    return { icon: <TrendingUp className="h-4 w-4 text-red-500" />, text: "Significant increase", color: "text-red-500" };
+    if (current < previous) {
+      return { 
+        icon: <TrendingDown size={16} className="text-emerald-500" />, 
+        color: "text-emerald-600",
+        label: "Price dropped"
+      };
+    } else if (current > previous) {
+      return { 
+        icon: <TrendingUp size={16} className="text-rose-500" />, 
+        color: "text-rose-600",
+        label: "Price increased"
+      };
+    } else {
+      return { 
+        icon: <BarChart3 size={16} className="text-gray-500" />, 
+        color: "text-gray-600",
+        label: "Price unchanged"
+      };
+    }
   };
 
   return (
-    <div className="container p-4 max-w-md mx-auto">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-emerald-800 flex items-center gap-2">
-          <ShoppingCart className="h-5 w-5" />
+    <Container padding={spacing.md} style={{ maxWidth: '100%', margin: '0 auto', paddingBottom: '90px' }}>
+      <Flex justify="space-between" align="center" style={{ marginBottom: spacing.md }}>
+        <Text variant="h2" color={colors.primary} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <ShoppingCart size={20} />
           Price Comparison
-        </h2>
-        <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
+        </Text>
+        <Text variant="body2" style={{ background: '#e6f7f0', color: colors.primary, padding: '4px 8px', borderRadius: borderRadius.sm }}>
           {activePriceAlerts.length} Alerts
-        </Badge>
-      </div>
+        </Text>
+      </Flex>
 
       {selectedItem ? (
-        <div className="space-y-4">
+        <div>
           <Button 
-            variant="ghost" 
-            className="mb-2 text-emerald-600"
-            onClick={() => setSelectedItem(null)}
+            variant="text" 
+            onClick={() => setSelectedItem(null)} 
+            style={{ marginBottom: spacing.md }}
           >
             ← Back to list
           </Button>
           
-          <Card className="bg-white/80 backdrop-blur-sm border border-emerald-100 shadow-sm">
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                  <span className="text-2xl">{selectedItem.image}</span>
-                  {selectedItem.name}
-                </CardTitle>
-                <Button 
-                  variant={selectedItem.onWatchlist ? "default" : "outline"} 
-                  size="sm" 
-                  onClick={() => togglePriceAlert(selectedItem.id)}
-                  className={selectedItem.onWatchlist 
-                    ? "bg-emerald-500 hover:bg-emerald-600" 
-                    : "text-emerald-500 border-emerald-200 hover:bg-emerald-50"
-                  }
-                >
-                  <AlertCircle className="h-4 w-4 mr-1" />
-                  {selectedItem.onWatchlist ? "Alert On" : "Set Alert"}
-                </Button>
+          <Card padding={spacing.md} margin={`0 0 ${spacing.md} 0`}>
+            <Flex justify="space-between" align="center" style={{ marginBottom: spacing.sm }}>
+              <Text variant="h3" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '24px' }}>{selectedItem.image}</span>
+                {selectedItem.name}
+              </Text>
+              <Button 
+                variant={selectedItem.onWatchlist ? "primary" : "outlined"} 
+                size="small" 
+                onClick={() => togglePriceAlert(selectedItem.id)}
+                style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+              >
+                <AlertCircle size={16} />
+                {selectedItem.onWatchlist ? "Alert On" : "Set Alert"}
+              </Button>
+            </Flex>
+            
+            <Divider margin={`${spacing.sm} 0`} />
+            
+            <Flex style={{ background: colors.lightGray, borderRadius: borderRadius.sm, padding: spacing.xs }}>
+              <Text variant="body1" style={{ padding: spacing.sm, cursor: 'pointer' }}>Stores</Text>
+              <Text variant="body1" style={{ padding: spacing.sm, cursor: 'pointer' }}>Price History</Text>
+              <Text variant="body1" style={{ padding: spacing.sm, cursor: 'pointer' }}>Alert Settings</Text>
+            </Flex>
+              
+            <div style={{ padding: `${spacing.md} 0` }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}>
+                {selectedItem.stores.map((store: any, index: number) => (
+                  <Card 
+                    key={`${store.name}-${index}`} 
+                    padding={spacing.md}
+                  >
+                    <Flex justify="space-between" align="center">
+                      <Flex gap={spacing.sm} align="center">
+                        <Store size={20} color={colors.primary} />
+                        <div>
+                          <Text variant="body1" style={{ fontWeight: 500 }}>{store.name}</Text>
+                          <Text variant="caption" color={colors.darkGray}>{store.distance} miles away</Text>
+                        </div>
+                      </Flex>
+                      <div style={{ textAlign: 'right' }}>
+                        <Text variant="h3">${store.price.toFixed(2)}</Text>
+                        {store.price === Math.min(...selectedItem.stores.map((s: any) => s.price)) && (
+                          <Text variant="caption" style={{ background: '#e6f7f0', color: colors.primary, padding: '2px 6px', borderRadius: borderRadius.sm }}>
+                            Best Price
+                          </Text>
+                        )}
+                      </div>
+                    </Flex>
+                  </Card>
+                ))}
               </div>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="stores">
-                <TabsList className="grid grid-cols-3 bg-emerald-50">
-                  <TabsTrigger value="stores">Stores</TabsTrigger>
-                  <TabsTrigger value="history">Price History</TabsTrigger>
-                  <TabsTrigger value="alert">Alert Settings</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="stores" className="pt-4">
-                  <div className="space-y-3">
-                    {selectedItem.stores.map((store: any, index: number) => (
-                      <div 
-                        key={`${store.name}-${index}`} 
-                        className="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-100 shadow-sm"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Store className="h-5 w-5 text-emerald-500" />
-                          <div>
-                            <p className="font-medium">{store.name}</p>
-                            <p className="text-xs text-gray-500">{store.distance} miles away</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-lg">${store.price.toFixed(2)}</p>
-                          {store.price === Math.min(...selectedItem.stores.map((s: any) => s.price)) && (
-                            <Badge className="bg-emerald-100 text-emerald-800">Best Price</Badge>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="history" className="pt-4">
-                  <div className="p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
-                    <div className="flex justify-between items-center mb-4">
-                      <div>
-                        <p className="text-sm text-gray-500">Current Price</p>
-                        <p className="font-bold text-lg">${selectedItem.currentPrice.toFixed(2)}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-500">Previous</p>
-                        <div className="flex items-center gap-1">
-                          <p className="font-medium">${selectedItem.previousPrice.toFixed(2)}</p>
-                          {getPriceTrend(selectedItem.currentPrice, selectedItem.previousPrice).icon}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <p className="font-medium mb-2">Price History (Last 5 Weeks)</p>
-                      <div className="relative h-20 bg-emerald-50 rounded-md p-2">
-                        <div className="flex h-full items-end justify-around gap-1">
-                          {selectedItem.priceHistory.map((price: number, i: number) => {
-                            const maxPrice = Math.max(...selectedItem.priceHistory);
-                            const minPrice = Math.min(...selectedItem.priceHistory);
-                            const range = maxPrice - minPrice;
-                            const height = range === 0 
-                              ? 80 
-                              : Math.max(20, ((price - minPrice) / range) * 80);
-                            
-                            return (
-                              <div 
-                                key={i} 
-                                className="relative flex-1 group"
-                              >
-                                <div 
-                                  className={`
-                                    ${i === selectedItem.priceHistory.length - 1 ? 'bg-emerald-500' : 'bg-emerald-300'} 
-                                    rounded-t-sm hover:opacity-80 transition-opacity
-                                  `}
-                                  style={{ height: `${height}%` }}
-                                ></div>
-                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 bg-emerald-700 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                                  ${price.toFixed(2)}
-                                </div>
-                                <div className="text-xs text-center mt-1 text-gray-500">
-                                  W{i+1}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="alert" className="pt-4">
-                  <div className="p-4 bg-white rounded-lg border border-gray-100 shadow-sm">
-                    <div className="mb-4">
-                      <Label htmlFor="alert-active" className="flex justify-between items-center">
-                        <span>Price Drop Alert</span>
-                        <Switch 
-                          id="alert-active" 
-                          checked={selectedItem.onWatchlist}
-                          onCheckedChange={() => togglePriceAlert(selectedItem.id)}
-                        />
-                      </Label>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <Label htmlFor="alert-threshold" className="mb-1 block">
-                        Alert me when price falls below:
-                      </Label>
-                      <div className="flex items-center gap-2">
-                        <Input 
-                          id="alert-threshold"
-                          type="number" 
-                          step="0.01"
-                          min="0"
-                          value={selectedItem.alertThreshold}
-                          onChange={(e) => {
-                            const value = parseFloat(e.target.value);
-                            setItems(items.map(item => 
-                              item.id === selectedItem.id 
-                                ? { ...item, alertThreshold: value } 
-                                : item
-                            ));
-                            setSelectedItem({...selectedItem, alertThreshold: value});
-                          }}
-                          className="border-emerald-200 focus:border-emerald-500"
-                        />
-                        <Button 
-                          className="bg-emerald-500 hover:bg-emerald-600"
-                          disabled={!selectedItem.onWatchlist}
-                        >
-                          Save
-                        </Button>
-                      </div>
-                      
-                      <p className="text-xs text-gray-500 mt-2">
-                        Current lowest price: ${Math.min(...selectedItem.stores.map((s: any) => s.price)).toFixed(2)}
-                      </p>
-                    </div>
-                    
-                    <div className="mt-6">
-                      <p className="text-sm font-medium mb-2">Notification Preferences</p>
-                      <ToggleGroup type="multiple" variant="outline" className="mt-2 justify-start">
-                        <ToggleGroupItem value="app" aria-label="Toggle app" className="data-[state=on]:bg-emerald-100 data-[state=on]:text-emerald-800 data-[state=on]:border-emerald-200">
-                          App
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="email" aria-label="Toggle email" className="data-[state=on]:bg-emerald-100 data-[state=on]:text-emerald-800 data-[state=on]:border-emerald-200">
-                          Email
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="sms" aria-label="Toggle SMS" className="data-[state=on]:bg-emerald-100 data-[state=on]:text-emerald-800 data-[state=on]:border-emerald-200">
-                          SMS
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </div>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
+            </div>
           </Card>
         </div>
       ) : (
         <>
-          <div className="flex gap-2 mb-4">
-            <Input
+          <Flex gap={spacing.sm} style={{ marginBottom: spacing.md }}>
+            <input
               placeholder="Search items..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 border-emerald-200 focus:border-emerald-500"
+              style={{ 
+                flex: 1, 
+                padding: spacing.sm, 
+                border: `1px solid ${colors.divider}`,
+                borderRadius: borderRadius.sm,
+                outline: 'none'
+              }}
             />
-            <Select value={sortOrder} onValueChange={(value: any) => setSortOrder(value)}>
-              <SelectTrigger className="w-[140px] border-emerald-200 focus:border-emerald-500">
-                <SelectValue placeholder="Sort By" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="asc">Price: Low to High</SelectItem>
-                <SelectItem value="desc">Price: High to Low</SelectItem>
-                <SelectItem value="stores">Best Store Price</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            <select 
+              value={sortOrder} 
+              onChange={(e) => setSortOrder(e.target.value as "asc" | "desc" | "stores")}
+              style={{ 
+                padding: spacing.sm, 
+                border: `1px solid ${colors.divider}`,
+                borderRadius: borderRadius.sm,
+                background: colors.white,
+                width: '200px'
+              }}
+            >
+              <option value="asc">Price: Low to High</option>
+              <option value="desc">Price: High to Low</option>
+              <option value="stores">Best Store Price</option>
+            </select>
+          </Flex>
           
-          <div className="flex items-center justify-between mb-4">
-            <Label htmlFor="price-drops" className="flex items-center gap-2 text-sm cursor-pointer">
-              <Switch 
-                id="price-drops"
+          <Flex justify="space-between" align="center" style={{ marginBottom: spacing.md }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: spacing.sm, fontSize: '14px', cursor: 'pointer' }}>
+              <input 
+                type="checkbox"
                 checked={showPriceDrops}
-                onCheckedChange={setShowPriceDrops}
+                onChange={(e) => setShowPriceDrops(e.target.checked)}
               />
               Show only price drops
-            </Label>
-            <Badge className="bg-emerald-100 text-emerald-800">
+            </label>
+            <Text variant="body2" style={{ background: '#e6f7f0', color: colors.primary, padding: '4px 8px', borderRadius: borderRadius.sm }}>
               {filteredItems.length} Items
-            </Badge>
-          </div>
+            </Text>
+          </Flex>
           
-          <div className="space-y-3">
+          {/* Main content area - all items */}
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: spacing.sm,
+            flex: 1,
+            overflowY: 'auto',
+            paddingBottom: '120px'
+          }}>
             {filteredItems.length > 0 ? (
-              filteredItems.map(item => (
+              filteredItems.map((item) => (
                 <Card 
                   key={item.id}
-                  className="bg-white/80 backdrop-blur-sm border border-emerald-100 shadow-sm overflow-hidden"
+                  padding="0"
+                  margin={`0 0 ${spacing.xs} 0`}
                 >
                   <div 
-                    className="p-3 flex items-center justify-between cursor-pointer"
+                    style={{ padding: spacing.md, cursor: 'pointer' }}
                     onClick={() => viewItemDetails(item)}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="text-2xl">{item.image}</div>
-                      <div>
-                        <p className="font-medium">{item.name}</p>
-                        <div className="flex items-center text-sm mt-0.5">
-                          {getPriceTrend(item.currentPrice, item.previousPrice).icon}
-                          <span className={`ml-1 ${getPriceTrend(item.currentPrice, item.previousPrice).color}`}>
-                            {item.currentPrice < item.previousPrice
-                              ? `$${(item.previousPrice - item.currentPrice).toFixed(2)} less`
-                              : item.currentPrice > item.previousPrice
-                              ? `$${(item.currentPrice - item.previousPrice).toFixed(2)} more`
-                              : "No change"}
-                          </span>
+                    <Flex justify="space-between" align="center">
+                      <Flex gap={spacing.sm} align="center">
+                        <div style={{ fontSize: '24px' }}>{item.image}</div>
+                        <div>
+                          <Text variant="body1" style={{ fontWeight: 500 }}>{item.name}</Text>
+                          <Flex align="center" style={{ marginTop: '2px' }}>
+                            {getPriceTrend(item.currentPrice, item.previousPrice).icon}
+                            <Text 
+                              variant="caption" 
+                              color={item.currentPrice < item.previousPrice ? colors.success : 
+                                    item.currentPrice > item.previousPrice ? colors.error : 
+                                    colors.darkGray}
+                              style={{ marginLeft: '4px' }}
+                            >
+                              {item.currentPrice < item.previousPrice
+                                ? `$${(item.previousPrice - item.currentPrice).toFixed(2)} less`
+                                : item.currentPrice > item.previousPrice
+                                ? `$${(item.currentPrice - item.previousPrice).toFixed(2)} more`
+                                : "No change"}
+                            </Text>
+                          </Flex>
                         </div>
+                      </Flex>
+                      <div style={{ textAlign: 'right' }}>
+                        <Text variant="h3">${item.currentPrice.toFixed(2)}</Text>
+                        <Text variant="caption" color={colors.midGray} style={{ textDecoration: 'line-through' }}>
+                          ${item.previousPrice.toFixed(2)}
+                        </Text>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold">${item.currentPrice.toFixed(2)}</p>
-                      <p className="text-xs text-gray-500 line-through">${item.previousPrice.toFixed(2)}</p>
-                    </div>
+                    </Flex>
                   </div>
                   
-                  <div className="px-3 pb-3 pt-1 flex justify-between items-center border-t border-gray-100">
-                    <div className="flex items-center text-sm">
-                      <Store className="h-4 w-4 text-emerald-500 mr-1" />
-                      <span>
+                  <Divider margin="0" />
+                  
+                  <Flex justify="space-between" align="center" style={{ padding: spacing.sm }}>
+                    <Flex align="center" gap={spacing.xs}>
+                      <Store size={16} color={colors.primary} />
+                      <Text variant="caption">
                         Best: ${Math.min(...item.stores.map(s => s.price)).toFixed(2)} at {
                           item.stores.reduce((best, store) => 
                             store.price < best.price ? store : best
                           ).name
                         }
-                      </span>
-                    </div>
+                      </Text>
+                    </Flex>
                     <Button
-                      variant="ghost"
-                      size="sm"
-                      className={`${activePriceAlerts.includes(item.id) 
-                        ? 'text-emerald-600' 
-                        : 'text-gray-500 hover:text-emerald-600'
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        togglePriceAlert(item.id);
+                      variant="text"
+                      size="small"
+                      onClick={() => togglePriceAlert(item.id)}
+                      style={{ 
+                        color: item.onWatchlist ? colors.primary : colors.darkGray,
+                        padding: spacing.xs
                       }}
                     >
-                      <AlertCircle className="h-4 w-4" />
+                      <AlertCircle size={16} />
                     </Button>
-                  </div>
+                  </Flex>
                 </Card>
               ))
             ) : (
-              <div className="text-center p-8 bg-white/50 backdrop-blur-sm rounded-lg border border-dashed border-emerald-200">
-                <div className="mx-auto h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center mb-3">
-                  <ShoppingCart className="h-6 w-6 text-emerald-500" />
+              <Card padding={spacing.lg} margin={`${spacing.md} 0`}>
+                <div style={{ textAlign: 'center', marginBottom: spacing.sm }}>
+                  <ShoppingCart size={24} color={colors.primary} />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-1">No items found</h3>
-                <p className="text-gray-500 mb-4">
+                <Text variant="h3" style={{ marginBottom: spacing.xs }}>No items found</Text>
+                <Text variant="body2" color={colors.darkGray} style={{ marginBottom: spacing.md }}>
                   {searchQuery 
                     ? `No items match "${searchQuery}"`
                     : showPriceDrops
-                    ? "No price drops found currently"
+                    ? "No items with price drops found"
                     : "Add items to your watchlist to compare prices"}
-                </p>
+                </Text>
                 <Button 
-                  className="bg-emerald-500 hover:bg-emerald-600"
+                  variant="primary"
                   onClick={() => {
                     setSearchQuery("");
                     setShowPriceDrops(false);
@@ -471,11 +407,11 @@ export default function PriceComparison() {
                 >
                   Reset Filters
                 </Button>
-              </div>
+              </Card>
             )}
           </div>
         </>
       )}
-    </div>
+    </Container>
   );
 }

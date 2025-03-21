@@ -37,7 +37,8 @@ import {
   Share2,
   Github,
   AlertTriangle,
-  LifeBuoy
+  LifeBuoy,
+  Map
 } from 'lucide-react';
 
 export default function ProfileScreen() {
@@ -113,6 +114,40 @@ export default function ProfileScreen() {
       { id: 3, name: 'Berry Smoothie', mealType: 'Snack' }
     ]
   });
+
+  // Advanced features list
+  const advancedFeatures = [
+    { 
+      icon: <DollarSign size={20} color={colors.primary} />, 
+      title: 'Price Comparison', 
+      description: 'Compare prices across stores and get alerts on deals',
+      onClick: () => navigate('/price-comparison') 
+    },
+    { 
+      icon: <Map size={20} color={colors.primary} />, 
+      title: 'Store Finder', 
+      description: 'Find stores near you with the best prices and selection',
+      onClick: () => navigate('/store-finder') 
+    },
+    { 
+      icon: <Utensils size={20} color={colors.primary} />, 
+      title: 'Meal Planning', 
+      description: 'Plan your meals for the week based on your pantry',
+      onClick: () => navigate('/meal-planning') 
+    },
+    { 
+      icon: <Calendar size={20} color={colors.primary} />, 
+      title: 'Smart Calendar', 
+      description: 'Track expiration dates and schedule cooking times',
+      onClick: () => navigate('/calendar') 
+    },
+    { 
+      icon: <Settings size={20} color={colors.primary} />, 
+      title: 'Dietary Preferences', 
+      description: 'Set your diet preferences and allergies',
+      onClick: () => navigate('/dietary-preferences') 
+    },
+  ];
 
   const menuItems = [
     { icon: <Bell size={22} color={colors.secondary} />, title: 'Notifications', onClick: () => {}, badge: 3 },
@@ -310,7 +345,8 @@ export default function ProfileScreen() {
           {[
             { id: 'stats', label: 'Overview' },
             { id: 'diet', label: 'Diet' },
-            { id: 'achievements', label: 'Achievements' }
+            { id: 'achievements', label: 'Achievements' },
+            { id: 'advanced', label: 'Advanced' }
           ].map(tab => (
             <div
               key={tab.id}
@@ -640,6 +676,50 @@ export default function ProfileScreen() {
                         )}
                       </div>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Advanced Tab */}
+          {activeTab === 'advanced' && (
+            <>
+              <Text variant="h3" color={colors.onBackground} margin={`0 0 ${spacing.md}`}>
+                Advanced Features
+              </Text>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: spacing.md,
+              }}>
+                {advancedFeatures.map((feature, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      backgroundColor: colors.surface,
+                      padding: spacing.md,
+                      borderRadius: borderRadius.lg,
+                      boxShadow: shadows.sm,
+                    }}
+                  >
+                    <Flex align="center" gap={spacing.md}>
+                      {feature.icon}
+                      <Text variant="body1" color={colors.onBackground}>{feature.title}</Text>
+                    </Flex>
+                    <Text variant="body2" color={colors.darkGray} margin={`0 0 ${spacing.md}`}>
+                      {feature.description}
+                    </Text>
+                    <Button 
+                      variant="filled" 
+                      style={{
+                        backgroundColor: colors.primary,
+                        color: colors.white,
+                      }}
+                      onClick={feature.onClick}
+                    >
+                      Get Started
+                    </Button>
                   </div>
                 ))}
               </div>

@@ -8,8 +8,14 @@ import ShoppingList from "./components/shopping/ShoppingList";
 import RecipesScreen from "./components/recipes/RecipesScreen";
 import ScanScreen from "./components/scanning/ScanScreen";
 import ProfileScreen from "./components/profile/ProfileScreen";
+import PriceComparison from "./components/price-comparison/PriceComparison";
+import StoreFinder from "./components/store-finder/StoreFinder";
+import MealPlanningCalendar from "./components/meal-planning/MealPlanningCalendar";
+import SmartCalendar from "./components/calendar/SmartCalendar";
+import DietaryPreferences from "./components/dietary/DietaryPreferences";
+import AdvancedFeaturesScreen from "./components/advanced/AdvancedFeaturesScreen";
 import { colors, spacing } from './components/ui/KitchenStoriesDesign';
-import { Home as HomeIcon, BookOpen, Camera, ShoppingCart, User } from 'lucide-react';
+import { Home as HomeIcon, BookOpen, Camera, ShoppingCart, User, DollarSign, Map, Calendar, Utensils, Settings, Menu, MoreHorizontal } from 'lucide-react';
 import Home from "./components/pages/home";
 import OnboardingFlow from "./components/onboarding/OnboardingFlow";
 import MobileAppPreview from "./components/mobile/MobileAppPreview";
@@ -25,18 +31,35 @@ function App() {
   
   // Helper to check current route
   const isRoute = (path: string) => location.pathname === path;
-  const isRecipeRouteActive = () => location.pathname === '/recipes' || location.pathname.startsWith('/recipe/');
   
+  const isRecipeRouteActive = () => {
+    return location.pathname === '/recipes' || location.pathname.startsWith('/recipe/');
+  };
+
+  const isAdvancedFeature = () => {
+    const advancedRoutes = [
+      '/advanced-features',
+      '/price-comparison',
+      '/store-finder',
+      '/meal-planning',
+      '/smart-calendar',
+      '/dietary-preferences',
+      '/shopping'
+    ];
+    return advancedRoutes.some(route => location.pathname === route);
+  };
+
   // Determine if this is a mobile app route (Kitchen Stories style pages)
   const isMobileAppRoute = () => [
     '/', '/recipe', '/pantry', '/shopping', '/recipes', '/profile', '/scan', 
-    '/categories', '/popular', '/search', '/shopping/add'
+    '/price-comparison', '/store-finder', '/meal-planning', '/smart-calendar', 
+    '/dietary-preferences', '/advanced-features', '/categories', '/popular', '/search', '/shopping/add'
   ].some(path => 
     path === '/' ? location.pathname === path : location.pathname.startsWith(path)
   );
 
-  // Navigation items
-  const navigationItems = [
+  // Primary navigation items (bottom nav)
+  const primaryNavItems = [
     {
       icon: <HomeIcon />,
       label: 'Home',
@@ -62,10 +85,50 @@ function App() {
       onClick: () => navigate('/shopping'),
     },
     {
-      icon: <User />,
-      label: 'Profile',
-      isActive: isRoute('/profile'),
-      onClick: () => navigate('/profile'),
+      icon: <MoreHorizontal />,
+      label: 'More',
+      isActive: isAdvancedFeature(),
+      onClick: () => navigate('/advanced-features'),
+    },
+  ];
+
+  // Advanced feature navigation items (accessible from profile or menu)
+  const advancedFeatureItems = [
+    {
+      icon: <DollarSign />,
+      label: 'Price Comparison',
+      isActive: isRoute('/price-comparison'),
+      onClick: () => navigate('/price-comparison'),
+    },
+    {
+      icon: <Map />,
+      label: 'Store Finder',
+      isActive: isRoute('/store-finder'),
+      onClick: () => navigate('/store-finder'),
+    },
+    {
+      icon: <Utensils />,
+      label: 'Meal Planning',
+      isActive: isRoute('/meal-planning'),
+      onClick: () => navigate('/meal-planning'),
+    },
+    {
+      icon: <Calendar />,
+      label: 'Calendar',
+      isActive: isRoute('/calendar'),
+      onClick: () => navigate('/calendar'),
+    },
+    {
+      icon: <Settings />,
+      label: 'Dietary Preferences',
+      isActive: isRoute('/dietary-preferences'),
+      onClick: () => navigate('/dietary-preferences'),
+    },
+    {
+      icon: <Settings />,
+      label: 'Advanced Features',
+      isActive: isRoute('/advanced-features'),
+      onClick: () => navigate('/advanced-features'),
     },
   ];
 
@@ -112,20 +175,29 @@ function App() {
             </div>
           </div>
           
-          {/* Main Content - Scrollable */}
+          {/* App Content - Scrollable Content */}
           <div className="hide-scrollbar" style={{ 
             flex: 1,
             overflowY: 'auto',
             paddingBottom: '70px',
           }}>
             <Routes>
+              {/* Main app routes */}
               <Route path="/" element={<HomeScreen />} />
+              <Route path="/recipes" element={<RecipesScreen />} />
               <Route path="/recipe/:id" element={<RecipeDetail />} />
               <Route path="/pantry" element={<PantryInventory />} />
               <Route path="/shopping" element={<ShoppingList />} />
-              <Route path="/recipes" element={<RecipesScreen />} />
-              <Route path="/profile" element={<ProfileScreen />} />
               <Route path="/scan" element={<ScanScreen />} />
+              <Route path="/profile" element={<ProfileScreen />} />
+              
+              {/* Advanced feature routes */}
+              <Route path="/advanced-features" element={<AdvancedFeaturesScreen />} />
+              <Route path="/price-comparison" element={<PriceComparison />} />
+              <Route path="/store-finder" element={<StoreFinder />} />
+              <Route path="/meal-planning" element={<MealPlanningCalendar />} />
+              <Route path="/smart-calendar" element={<SmartCalendar />} />
+              <Route path="/dietary-preferences" element={<DietaryPreferences />} />
               <Route path="/categories" element={<Navigate to="/" />} />
               <Route path="/popular" element={<Navigate to="/" />} />
               <Route path="/category/:name" element={<Navigate to="/" />} />
@@ -134,7 +206,7 @@ function App() {
             </Routes>
           </div>
           
-          {/* Fixed Bottom Navigation */}
+          {/* Bottom Navigation */}
           <div style={{
             position: 'absolute',
             bottom: 0,
@@ -142,7 +214,7 @@ function App() {
             right: 0,
             height: '70px',
             backgroundColor: colors.white,
-            borderTop: `1px solid ${colors.divider}`,
+            borderTop: `1px solid ${colors.lightGray || '#EEEEEE'}`,
             boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.05)',
             display: 'flex',
             justifyContent: 'space-around',
@@ -150,7 +222,7 @@ function App() {
             width: '100%',
             zIndex: 100,
           }}>
-            {navigationItems.map((item, index) => (
+            {primaryNavItems.map((item, index) => (
               <button
                 key={index}
                 onClick={item.onClick}

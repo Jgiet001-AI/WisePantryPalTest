@@ -732,11 +732,11 @@ export const BottomNavigation: React.FC<{
 export const RecipeCard: React.FC<{
   title: string;
   image: string;
-  duration?: string;
-  difficulty?: string;
-  category?: string;
-  rating?: number;
-  author?: string;
+  duration: string;
+  difficulty: string;
+  category: string;
+  rating: number;
+  author: string;
   onClick?: () => void;
 }> = ({ 
   title, 
@@ -749,62 +749,225 @@ export const RecipeCard: React.FC<{
   onClick,
 }) => {
   return (
-    <div 
-      onClick={onClick}
-      style={{
-        borderRadius: borderRadius.md,
-        overflow: 'hidden',
-        boxShadow: shadows.md,
-        backgroundColor: colors.background,
-        cursor: onClick ? 'pointer' : 'default',
-      }}
+    <Card 
+      padding="0" 
+      onClick={onClick} 
+      borderRadiusSize={borderRadius.md}
+      shadow={shadows.card}
     >
       <div style={{ position: 'relative' }}>
         <img 
           src={image} 
-          alt={title} 
+          alt={title}
           style={{ 
             width: '100%', 
-            aspectRatio: '4/3',
+            height: '180px', 
             objectFit: 'cover',
+            borderTopLeftRadius: borderRadius.md,
+            borderTopRightRadius: borderRadius.md,
           }}
         />
-        {category && (
-          <div style={{
-            position: 'absolute',
-            top: spacing.sm,
-            left: spacing.sm,
-          }}>
-            <Badge>{category}</Badge>
-          </div>
-        )}
+        <div style={{ 
+          position: 'absolute', 
+          bottom: spacing.sm, 
+          left: spacing.sm, 
+          display: 'flex', 
+          gap: spacing.xs
+        }}>
+          <Badge background="rgba(0,0,0,0.7)">{duration}</Badge>
+          <Badge background="rgba(0,0,0,0.7)">{difficulty}</Badge>
+          <Badge background="rgba(0,0,0,0.7)">{category}</Badge>
+        </div>
       </div>
       <div style={{ padding: spacing.md }}>
-        <Text variant="h3" margin={`0 0 ${spacing.xs} 0`}>{title}</Text>
-        
+        <Text variant="h3" style={{ marginBottom: spacing.xs }}>{title}</Text>
         <Flex justify="space-between" align="center">
-          {duration && (
-            <Text variant="caption" color={colors.darkGray}>
-              {duration}
-            </Text>
-          )}
-          
-          {difficulty && (
-            <Text variant="caption" color={colors.darkGray}>
-              {difficulty}
-            </Text>
-          )}
+          <Text variant="body2" style={{ color: colors.darkGray }}>{author}</Text>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} style={{ color: i < Math.round(rating) ? colors.accent : colors.lightGray }}>★</div>
+            ))}
+          </div>
         </Flex>
-        
-        {author && (
-          <Flex align="center" gap={spacing.xs} margin={`${spacing.sm} 0 0 0`}>
-            <Avatar size="small" initials={author.charAt(0)} />
-            <Text variant="caption" color={colors.darkGray}>
-              {author}
-            </Text>
-          </Flex>
-        )}
       </div>
+    </Card>
+  );
+};
+
+// Input component
+export const Input: React.FC<{
+  placeholder?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  icon?: ReactNode;
+  fullWidth?: boolean;
+  disabled?: boolean;
+  style?: React.CSSProperties;
+}> = ({
+  placeholder = '',
+  value,
+  onChange,
+  type = 'text',
+  icon,
+  fullWidth = false,
+  disabled = false,
+  style = {},
+}) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: `${spacing.xs} ${spacing.sm}`,
+        backgroundColor: colors.surface,
+        border: `1px solid ${colors.divider}`,
+        borderRadius: borderRadius.md,
+        width: fullWidth ? '100%' : 'auto',
+        boxSizing: 'border-box',
+        transition: `all ${animation.fast} ${animation.easing}`,
+        ...style
+      }}
+    >
+      {icon && <span style={{ display: 'flex', marginRight: spacing.xs }}>{icon}</span>}
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        disabled={disabled}
+        style={{
+          border: 'none',
+          background: 'transparent',
+          outline: 'none',
+          width: '100%',
+          padding: spacing.xs,
+          color: colors.onBackground,
+          fontSize: typography.body1.fontSize,
+          lineHeight: typography.body1.lineHeight,
+        }}
+      />
+    </div>
+  );
+};
+
+// CardContent component
+export const CardContent: React.FC<{
+  children: ReactNode;
+  padding?: string;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  padding = spacing.md,
+  style = {},
+}) => {
+  return (
+    <div
+      style={{
+        padding,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// Tabs and TabsContent components
+export const Tabs: React.FC<{
+  children: ReactNode;
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  style = {},
+}) => {
+  return (
+    <div
+      style={{
+        width: '100%',
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const TabsList: React.FC<{
+  children: ReactNode;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  style = {},
+}) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        borderBottom: `1px solid ${colors.divider}`,
+        marginBottom: spacing.md,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const TabsTrigger: React.FC<{
+  children: ReactNode;
+  value: string;
+  active?: boolean;
+  onClick?: () => void;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  active = false,
+  onClick,
+  style = {},
+}) => {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: `${spacing.sm} ${spacing.md}`,
+        background: 'transparent',
+        border: 'none',
+        borderBottom: active ? `2px solid ${colors.primary}` : '2px solid transparent',
+        color: active ? colors.primary : colors.darkGray,
+        fontWeight: active ? 600 : 400,
+        cursor: 'pointer',
+        transition: `all ${animation.fast} ${animation.easing}`,
+        ...style,
+      }}
+    >
+      {children}
+    </button>
+  );
+};
+
+export const TabsContent: React.FC<{
+  children: ReactNode;
+  value: string;
+  active?: boolean;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  active = false,
+  style = {},
+}) => {
+  if (!active) return null;
+  
+  return (
+    <div
+      style={{
+        ...style,
+      }}
+    >
+      {children}
     </div>
   );
 };
