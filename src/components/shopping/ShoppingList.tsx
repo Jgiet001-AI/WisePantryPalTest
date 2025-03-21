@@ -106,8 +106,8 @@ export default function ShoppingList() {
   
   const getSourceIcon = (source: string) => {
     switch(source) {
-      case "pantry": return <Package size={14} color={colors.info} />;
-      case "recipe": return <Tag size={14} color={colors.accent} />;
+      case "pantry": return <Package size={14} color={colors.primary} />;
+      case "recipe": return <Tag size={14} color={colors.accent1} />;
       case "regular": return <CalendarClock size={14} color={colors.success} />;
       default: return <PencilLine size={14} color={colors.secondary} />;
     }
@@ -124,8 +124,8 @@ export default function ShoppingList() {
   
   const getSourceColor = (source: string) => {
     switch(source) {
-      case "pantry": return colors.info;
-      case "recipe": return colors.accent;
+      case "pantry": return colors.primary;
+      case "recipe": return colors.accent1;
       case "regular": return colors.success;
       default: return colors.secondary;
     }

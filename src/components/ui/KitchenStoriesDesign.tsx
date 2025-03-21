@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 
-// Modern colors inspired by Price Comparison screen
+// Modern colors inspired by Price Comparison screen with improved contrast
 export const colors = {
   primary: '#4f46e5', // Indigo
   primaryLight: '#eef2ff',
@@ -11,34 +11,62 @@ export const colors = {
   
   // Accent colors
   accent1: '#ec4899', // Pink
-  accent2: '#14b8a6', // Teal
+  accent2: '#06b6d4', // Teal
   accent3: '#f97316', // Orange
   
   // Status colors
-  success: '#22c55e',
+  success: '#10b981',
   successLight: '#dcfce7',
   error: '#ef4444',
   errorLight: '#fee2e2',
-  warning: '#eab308',
+  warning: '#f59e0b',
   warningLight: '#fef9c3',
   
   // Neutral colors
   white: '#ffffff',
   background: '#f9fafb',
   surface: '#ffffff',
-  textPrimary: '#111827',
-  textSecondary: '#6b7280',
-  
-  // Additional colors
-  lightGray: '#F0F7FF',
+  textPrimary: '#111827', // Darker for better contrast
+  textSecondary: '#4b5563', // Darker for better contrast
+  lightGray: '#e5e7eb',
   midGray: '#9ca3af',
   darkGray: '#4b5563',
   black: '#1A202C',
   divider: '#e5e7eb',
   onPrimary: '#FFFFFF', // White text on primary
   onSecondary: '#FFFFFF', // White text on secondary
-  onBackground: '#1f2937', // Dark text on background
+  onBackground: '#111827', // Dark text on background
   onSurface: '#1f2937', // Dark text on surface
+};
+
+// Color semantic meanings for consistent application
+export const colorUsage = {
+  // UI Elements
+  primaryAction: colors.primary,
+  secondaryAction: colors.secondary,
+  tertiaryAction: colors.accent1,
+  success: colors.success,
+  warning: colors.warning,
+  error: colors.error,
+  info: colors.accent2,
+  
+  // Backgrounds
+  cardBackground: colors.white,
+  pageBackground: colors.background,
+  highlightBackground: `${colors.primary}15`,
+  secondaryHighlight: `${colors.secondary}15`,
+  accentHighlight: `${colors.accent1}15`,
+  
+  // Text
+  primaryText: colors.textPrimary,
+  secondaryText: colors.textSecondary,
+  contrastText: colors.white,
+  
+  // Icons
+  primaryIcon: colors.primary,
+  secondaryIcon: colors.secondary,
+  accentIcon: colors.accent1,
+  infoIcon: colors.accent2,
 };
 
 // Typography styles with more modern proportions
@@ -106,14 +134,16 @@ export const borderRadius = {
   circle: '50%',
 };
 
-// Shadows with softer edges
+// Enhanced shadows with softer edges and better depth perception
 export const shadows = {
-  sm: '0 2px 10px rgba(0, 0, 0, 0.05)',
-  md: '0 4px 6px rgba(0, 0, 0, 0.1)',
-  lg: '0 10px 15px rgba(0, 0, 0, 0.1)',
-  xl: '0 15px 25px rgba(0, 0, 0, 0.1)',
-  card: '0 2px 10px rgba(0, 0, 0, 0.05)',
-  button: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  sm: '0 2px 8px rgba(0, 0, 0, 0.05)',
+  md: '0 4px 12px rgba(0, 0, 0, 0.08)',
+  lg: '0 8px 20px rgba(0, 0, 0, 0.1)',
+  xl: '0 12px 28px rgba(0, 0, 0, 0.12)',
+  card: '0 2px 10px rgba(0, 0, 0, 0.06)',
+  button: '0 4px 6px rgba(0, 0, 0, 0.08)',
+  hover: '0 6px 14px rgba(0, 0, 0, 0.1)',
+  active: '0 2px 4px rgba(0, 0, 0, 0.1)',
 };
 
 // Animation durations
@@ -150,140 +180,148 @@ export const Container: React.FC<{
   );
 };
 
-export const Card: React.FC<{
-  children: ReactNode;
-  padding?: string;
-  margin?: string;
-  background?: string;
-  borderRadiusSize?: string;
-  shadow?: string;
-  onClick?: () => void;
-}> = ({ 
+// Card component with enhanced styling and hover effects
+export function Card({ 
   children, 
   padding = spacing.md, 
   margin = '0', 
-  background = colors.background, 
+  background = colors.white, 
   borderRadiusSize = borderRadius.md,
   shadow = shadows.card,
-  onClick
-}) => {
+  onClick = null
+}) {
+  const [isHovered, setIsHovered] = React.useState(false);
+  
   return (
     <div 
-      style={{ 
-        padding, 
-        margin, 
-        background, 
-        borderRadius: borderRadiusSize,
-        boxShadow: shadow,
-        cursor: onClick ? 'pointer' : 'default',
-        transition: `all ${animation.medium} ${animation.easing}`,
-        border: `1px solid ${colors.divider}`,
-        overflow: 'hidden',
-      }}
       onClick={onClick}
+      onMouseEnter={() => onClick && setIsHovered(true)}
+      onMouseLeave={() => onClick && setIsHovered(false)}
+      style={{
+        padding,
+        margin,
+        background,
+        borderRadius: borderRadiusSize,
+        boxShadow: isHovered && onClick ? shadows.hover : shadow,
+        transition: 'all 0.2s ease',
+        transform: isHovered && onClick ? 'translateY(-2px)' : 'translateY(0)',
+        cursor: onClick ? 'pointer' : 'default',
+      }}
     >
       {children}
     </div>
   );
 };
 
-export const Button: React.FC<{
-  children: ReactNode;
-  variant?: 'text' | 'primary' | 'secondary' | 'outlined' | 'filled';
-  fullWidth?: boolean;
-  onClick?: () => void;
-  disabled?: boolean;
-  icon?: ReactNode;
-  size?: 'small' | 'medium' | 'large';
-  style?: React.CSSProperties;
-}> = ({ 
+// Button component with enhanced accessibility and feedback states
+export function Button({ 
   children, 
   variant = 'primary', 
   fullWidth = false, 
   onClick, 
   disabled = false,
-  icon,
+  icon = null,
   size = 'medium',
   style = {}
-}) => {
-  const getStyles = () => {
-    const baseStyles: React.CSSProperties = {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: spacing.sm,
-      width: fullWidth ? '100%' : 'auto',
-      border: 'none',
+}) {
+  const [isPressed, setIsPressed] = useState(false);
+  
+  // Size configurations
+  const sizeStyles = {
+    small: {
+      padding: `${spacing.xs} ${spacing.sm}`,
+      fontSize: '14px',
+      borderRadius: borderRadius.sm,
+      height: '32px',
+      minWidth: '80px',
+    },
+    medium: {
+      padding: `${spacing.sm} ${spacing.md}`,
+      fontSize: '15px',
       borderRadius: borderRadius.md,
-      fontWeight: 600,
-      cursor: disabled ? 'not-allowed' : 'pointer',
-      opacity: disabled ? 0.7 : 1,
-      transition: `all ${animation.fast} ${animation.easing}`,
-      ...style
-    };
-
-    const sizeStyles = {
-      small: {
-        padding: `${spacing.xs} ${spacing.sm}`,
-        fontSize: '14px',
-        borderRadius: borderRadius.sm,
-      },
-      medium: {
-        padding: `${spacing.sm} ${spacing.md}`,
-        fontSize: '15px',
-        borderRadius: borderRadius.md,
-      },
-      large: {
-        padding: `${spacing.md} ${spacing.lg}`,
-        fontSize: '16px',
-        borderRadius: borderRadius.md,
-      },
-    };
-
-    const variantStyles = {
-      primary: {
-        backgroundColor: colors.primary,
-        color: colors.onPrimary,
-      },
-      secondary: {
-        backgroundColor: colors.secondary,
-        color: colors.onSecondary,
-      },
-      outlined: {
-        backgroundColor: 'transparent',
-        color: colors.primary,
-        border: `1px solid ${colors.primary}`,
-      },
-      text: {
-        backgroundColor: 'transparent',
-        color: colors.primary,
-        padding: `${spacing.xs} ${spacing.sm}`,
-      },
-      filled: {
-        backgroundColor: colors.primary,
-        color: colors.onPrimary,
-      },
-    };
-
-    return {
-      ...baseStyles,
-      ...sizeStyles[size],
-      ...variantStyles[variant],
-    };
+      height: '40px',
+      minWidth: '100px',
+    },
+    large: {
+      padding: `${spacing.md} ${spacing.lg}`,
+      fontSize: '16px',
+      borderRadius: borderRadius.md,
+      height: '48px',
+      minWidth: '120px',
+    }
   };
-
+  
+  // Variant configurations with improved focus and active states
+  const variantStyles = {
+    primary: {
+      background: disabled ? `${colors.primary}80` : colors.primary,
+      color: colors.onPrimary,
+      border: 'none',
+      boxShadow: disabled ? 'none' : isPressed ? shadows.active : shadows.button,
+      transform: isPressed ? 'scale(0.98)' : 'scale(1)',
+    },
+    secondary: {
+      background: colors.white,
+      color: colors.primary,
+      border: `1px solid ${colors.primary}`,
+      boxShadow: disabled ? 'none' : isPressed ? shadows.active : shadows.sm,
+      transform: isPressed ? 'scale(0.98)' : 'scale(1)',
+    },
+    text: {
+      background: 'transparent',
+      color: colors.primary,
+      border: 'none',
+      boxShadow: 'none',
+      padding: sizeStyles[size].padding,
+      transform: isPressed ? 'scale(0.98)' : 'scale(1)',
+    },
+    success: {
+      background: disabled ? `${colors.success}80` : colors.success,
+      color: colors.white,
+      border: 'none',
+      boxShadow: disabled ? 'none' : isPressed ? shadows.active : shadows.button,
+      transform: isPressed ? 'scale(0.98)' : 'scale(1)',
+    },
+    error: {
+      background: disabled ? `${colors.error}80` : colors.error,
+      color: colors.white,
+      border: 'none',
+      boxShadow: disabled ? 'none' : isPressed ? shadows.active : shadows.button,
+      transform: isPressed ? 'scale(0.98)' : 'scale(1)',
+    },
+  };
+  
   return (
-    <button 
-      style={getStyles()} 
-      onClick={onClick} 
+    <button
+      onClick={onClick}
       disabled={disabled}
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseLeave={() => setIsPressed(false)}
+      style={{
+        ...sizeStyles[size],
+        ...variantStyles[variant],
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: icon ? spacing.sm : '0',
+        width: fullWidth ? '100%' : 'auto',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        transition: `all ${animation.fast} ${animation.easing}`,
+        fontWeight: 600,
+        outline: 'none',
+        position: 'relative',
+        overflow: 'hidden',
+        ...style,
+      }}
     >
-      {icon && <span>{icon}</span>}
+      {icon && <span style={{ display: 'flex', alignItems: 'center' }}>{icon}</span>}
       {children}
     </button>
   );
 };
 
+// Badge component
 export const Badge: React.FC<{
   children: ReactNode;
   color?: string;
@@ -308,6 +346,7 @@ export const Badge: React.FC<{
   );
 };
 
+// Divider component
 export const Divider: React.FC<{
   margin?: string;
   color?: string;
@@ -327,6 +366,7 @@ export const Divider: React.FC<{
   );
 };
 
+// Text component
 export const Text: React.FC<{
   children: ReactNode;
   variant?: keyof typeof typography;
@@ -402,6 +442,7 @@ export const Text: React.FC<{
   );
 };
 
+// Flex component
 export const Flex: React.FC<{
   children: ReactNode;
   direction?: 'row' | 'column';
@@ -448,6 +489,7 @@ export const Flex: React.FC<{
   );
 };
 
+// Grid component
 export const Grid: React.FC<{
   children: ReactNode;
   columns?: number;
@@ -476,6 +518,7 @@ export const Grid: React.FC<{
   );
 };
 
+// TextField component
 export const TextField: React.FC<{
   label?: string;
   placeholder?: string;
@@ -533,6 +576,7 @@ export const TextField: React.FC<{
   );
 };
 
+// Avatar component
 export const Avatar: React.FC<{
   src?: string;
   alt?: string;
@@ -922,7 +966,7 @@ export const TabsList: React.FC<{
         display: 'flex',
         borderBottom: `1px solid ${colors.divider}`,
         marginBottom: spacing.md,
-        ...style,
+        ...style
       }}
     >
       {children}

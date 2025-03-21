@@ -55,7 +55,7 @@ const popularRecipes = [
   {
     id: 4,
     title: 'Whole Grain Margherita Pizza',
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=580&q=80',
+    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a574?auto=format&fit=crop&w=580&q=80',
     duration: '40 min',
     difficulty: 'Medium',
     category: 'Dinner',
@@ -106,7 +106,17 @@ export default function HomeScreen() {
 
   // Navigate to category
   const handleCategoryClick = (category: string) => {
-    navigate(`/category/${category.toLowerCase().replace(' ', '-')}`);
+    navigate(`/category/${category.toLowerCase().replace(/\s+/g, '-')}`);
+  };
+
+  // Navigate to profile
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
+
+  // Navigate to notifications
+  const handleNotificationsClick = () => {
+    navigate('/notifications');
   };
 
   return (
@@ -124,28 +134,36 @@ export default function HomeScreen() {
       }}>
         <Flex justify="space-between" align="center" margin={`0 0 ${spacing.md}`}>
           <Text variant="h2" style={{ color: colors.white, margin: 0, fontWeight: 'bold' }}>WisePantryPal</Text>
-          <div style={{ 
-            backgroundColor: 'rgba(255, 255, 255, 0.2)', 
-            borderRadius: '50%',
-            width: '36px',
-            height: '36px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backdropFilter: 'blur(4px)'
-          }}>
-            <Heart size={24} color={colors.white} />
+          <div 
+            style={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+              borderRadius: '50%',
+              width: '36px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(4px)',
+              cursor: 'pointer'
+            }}
+            onClick={handleProfileClick}
+          >
+            <User size={24} color={colors.white} />
           </div>
         </Flex>
         
-        <div style={{ 
-          display: 'flex',
-          backgroundColor: colors.white,
-          borderRadius: borderRadius.lg,
-          padding: `${spacing.xs} ${spacing.md}`,
-          alignItems: 'center',
-          boxShadow: shadows.sm,
-        }}>
+        <div 
+          style={{ 
+            display: 'flex',
+            backgroundColor: colors.white,
+            borderRadius: borderRadius.lg,
+            padding: `${spacing.xs} ${spacing.md}`,
+            alignItems: 'center',
+            boxShadow: shadows.sm,
+            cursor: 'pointer',
+          }}
+          onClick={() => navigate('/search')}
+        >
           <Search size={20} color={colors.primary} style={{ marginRight: spacing.sm }} />
           <input
             type="text"
@@ -157,6 +175,10 @@ export default function HomeScreen() {
               width: '100%',
               outline: 'none',
               color: colors.textPrimary,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate('/search');
             }}
           />
         </div>

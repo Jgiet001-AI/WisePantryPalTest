@@ -23,7 +23,8 @@ import {
   Image,
   AlertTriangle,
   Loader2,
-  ArrowLeft
+  ArrowLeft,
+  ShoppingBag
 } from 'lucide-react';
 
 export default function ScanScreen() {
@@ -174,14 +175,14 @@ export default function ScanScreen() {
               direction="column" 
               gap={spacing.md}
               style={{
-                backgroundColor: `${colors.accent}15`,
+                backgroundColor: `${colors.accent1}15`,
                 padding: spacing.lg,
                 borderRadius: borderRadius.lg,
               }}
             >
               <Flex align="center" gap={spacing.sm}>
-                <AlertTriangle size={24} color={colors.accent} />
-                <Text variant="h3" color={colors.accent}>Scanning Tips</Text>
+                <AlertTriangle size={24} color={colors.accent1} />
+                <Text variant="h3" color={colors.accent1}>Scanning Tips</Text>
               </Flex>
               
               <Text variant="body2">
@@ -334,8 +335,21 @@ export default function ScanScreen() {
               <Text variant="h3" margin={`0 0 ${spacing.sm}`}>What would you like to do?</Text>
               
               <Flex direction="column" gap={spacing.sm}>
-                <Button fullWidth>Add to Pantry</Button>
-                <Button fullWidth variant="outlined">Add to Shopping List</Button>
+                <Button 
+                  fullWidth 
+                  onClick={() => console.log('Add to Pantry')}
+                  icon={<ShoppingBag size={16} />}
+                >
+                  Add to Pantry
+                </Button>
+                <Button 
+                  fullWidth 
+                  variant="outlined" 
+                  onClick={() => console.log('Add to Shopping List')}
+                  icon={<ShoppingCart size={16} />}
+                >
+                  Add to Shopping List
+                </Button>
               </Flex>
             </div>
             

@@ -30,37 +30,37 @@ export default function AdvancedFeaturesScreen() {
       icon: <DollarSign size={24} color={colors.primary} />,
       title: 'Price Comparison',
       description: 'Compare prices across different stores to find the best deals on your grocery items.',
-      onClick: () => navigate('/price-comparison'),
+      path: '/price-comparison',
     },
     {
       icon: <Map size={24} color={colors.primary} />,
       title: 'Store Finder',
       description: 'Find stores near you that have the items you need at the best prices.',
-      onClick: () => navigate('/store-finder'),
+      path: '/store-finder',
     },
     {
       icon: <Utensils size={24} color={colors.primary} />,
       title: 'Meal Planning',
       description: 'Plan your meals for the week ahead, with automatic grocery list generation.',
-      onClick: () => navigate('/meal-planning'),
+      path: '/meal-planning',
     },
     {
       icon: <Calendar size={24} color={colors.primary} />,
       title: 'Smart Calendar',
       description: 'A calendar that helps you track food expiration dates and plan meals accordingly.',
-      onClick: () => navigate('/smart-calendar'),
+      path: '/smart-calendar',
     },
     {
       icon: <FileBadge size={24} color={colors.primary} />,
       title: 'Dietary Preferences',
       description: 'Set your dietary preferences and allergies to receive personalized recommendations.',
-      onClick: () => navigate('/dietary-preferences'),
+      path: '/dietary-preferences',
     },
     {
       icon: <User size={24} color={colors.primary} />,
       title: 'Profile',
       description: 'Manage your account settings, preferences, and personal information.',
-      onClick: () => navigate('/profile'),
+      path: '/profile',
     },
   ];
 
@@ -81,7 +81,6 @@ export default function AdvancedFeaturesScreen() {
           {advancedFeatures.map((feature, index) => (
             <div 
               key={index}
-              onClick={feature.onClick}
               onMouseEnter={() => setHoveredCard(index)}
               onMouseLeave={() => setHoveredCard(null)}
               style={{
@@ -94,6 +93,7 @@ export default function AdvancedFeaturesScreen() {
                 background={colors.white}
                 shadow={hoveredCard === index ? shadows.md : shadows.sm}
                 padding={spacing.md}
+                onClick={() => navigate(feature.path)}
               >
                 <Flex justify="space-between" align="center">
                   <Flex gap={spacing.md} align="center">

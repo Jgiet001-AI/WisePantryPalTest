@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   showText?: boolean;
 }
 
@@ -11,6 +11,7 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
     sm: "h-8",
     md: "h-12",
     lg: "h-16",
+    xl: "h-24",
   };
 
   return (
@@ -29,6 +30,7 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
             size === "sm" && "text-lg",
             size === "md" && "text-xl",
             size === "lg" && "text-2xl",
+            size === "xl" && "text-3xl",
             "bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent",
           )}
         >

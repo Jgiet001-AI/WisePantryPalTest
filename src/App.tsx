@@ -1,24 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { Routes, Route, useNavigate, Navigate, useLocation } from "react-router-dom";
+import { colors, spacing } from "./components/ui/KitchenStoriesDesign";
+import { Home, BookOpen, Camera, ShoppingCart, MoreHorizontal } from "lucide-react";
+import { LoadingProvider } from "./contexts/LoadingContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { OfflineProvider } from "./contexts/OfflineContext";
+import { AnimationProvider, ToastProvider } from "./components/ui/Animations";
+import { TourProvider } from "./components/ui/OnboardingTour";
 
-// UI Components & Styling
-import { 
-  Home, 
-  BookOpen as Book, 
-  Camera, 
-  ShoppingCart, 
-  MoreHorizontal,
-  Wifi,
-  Battery
-} from 'lucide-react';
-import { colors, spacing, Text } from './components/ui/KitchenStoriesDesign';
+// Authentication & Onboarding
+import Onboarding from "./components/onboarding/OnboardingFlow";
+import Welcome from "./components/auth/Welcome";
+import Setup from "./components/auth/Setup";
 
-// Main Screens
+// Main App Screens
 import HomeScreen from "./components/pages/HomeScreen";
 import RecipesScreen from "./components/recipes/RecipesScreen";
 import RecipeDetail from "./components/recipes/RecipeDetail";
 import ScanScreen from "./components/scanning/ScanScreen";
+import Dashboard from "./components/dashboard/Dashboard";
+import Success from "./components/auth/Success";
+import TinderStyle from "./components/tinder/TinderStyle";
 import ShoppingList from "./components/shopping/ShoppingList";
 import PantryInventory from "./components/pantry/PantryInventory";
 import ProfileScreen from "./components/profile/ProfileScreen";
@@ -27,24 +29,27 @@ import ProfileScreen from "./components/profile/ProfileScreen";
 import AdvancedFeaturesScreen from "./components/advanced/AdvancedFeaturesScreen";
 import PriceComparison from "./components/price-comparison/PriceComparison";
 import StoreFinder from "./components/store-finder/StoreFinder";
+import MealPlanning from "./components/meal-planning/MealPlanningCalendar";
+import SmartCalendar from "./components/smart-calendar/SmartCalendar";
+import DietaryPreferences from "./components/dietary-preferences/DietaryPreferences";
+// Temporarily comment out Profile import until component exists
+// import Profile from "./components/user/Profile";
+import UIEnhancementsDemo from "./components/demo/UIEnhancementsDemo";
+import BasicDemo from "./components/demo/BasicDemo";
 import MealPlanningCalendar from "./components/meal-planning/MealPlanningCalendar";
-import SmartCalendar from "./components/calendar/SmartCalendar";
-import DietaryPreferences from "./components/dietary/DietaryPreferences";
 
-// Onboarding & Authentication
-import Onboarding from "./components/onboarding/OnboardingFlow";
-import Welcome from "./components/auth/LoginForm";
-import Setup from "./components/auth/SignUpForm";
-
-// Legacy Components (using correct casing and paths)
-import Dashboard from "./components/pages/dashboard";
-import Success from "./components/pages/success";
-import TinderStyle from "./components/pages/TinderStyle";
+// New components for clickable elements
+import SearchScreen from "./components/search/SearchScreen";
+import CategoriesScreen from "./components/categories/CategoriesScreen";
+import CategoryDetail from "./components/categories/CategoryDetail";
+import FeaturedScreen from "./components/featured/FeaturedScreen";
+import PopularScreen from "./components/popular/PopularScreen";
+import NotificationsScreen from "./components/notifications/NotificationsScreen";
 
 /**
  * Main application component handling routing and navigation
  */
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -75,11 +80,11 @@ const App: React.FC = () => {
 
   // Navigation Items Configuration
   const primaryNavItems = [
-    { path: '/', label: 'Home', icon: Home },
-    { path: '/recipes', label: 'Recipes', icon: Book },
-    { path: '/scan', label: 'Scan', icon: Camera },
-    { path: '/shopping-list', label: 'Shopping', icon: ShoppingCart },
-    { path: '/advanced', label: 'More', icon: MoreHorizontal }
+    { path: '/', label: 'Home', icon: () => <Home size={24} /> },
+    { path: '/recipes', label: 'Recipes', icon: () => <BookOpen size={24} /> },
+    { path: '/scan', label: 'Scan', icon: () => <Camera size={24} /> },
+    { path: '/shopping-list', label: 'Shopping', icon: () => <ShoppingCart size={24} /> },
+    { path: '/advanced', label: 'More', icon: () => <MoreHorizontal size={24} /> }
   ];
 
   // Simulate authentication check
@@ -116,7 +121,7 @@ const App: React.FC = () => {
   if (isLoading) {
     return (
       <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Text variant="h3">Loading...</Text>
+        <div>Loading...</div>
       </div>
     );
   }
@@ -164,105 +169,98 @@ const App: React.FC = () => {
             padding: '0 16px',
             borderBottom: `1px solid ${colors.lightGray}`
           }}>
-            <Text variant="caption">{new Date().toLocaleTimeString()}</Text>
+            <div>{new Date().toLocaleTimeString()}</div>
             <div style={{ display: 'flex', gap: '8px' }}>
-              <Wifi size={12} />
-              <Battery size={12} />
+              <div>Wifi Icon</div>
+              <div>Battery Icon</div>
             </div>
           </div>
         )}
         
-        {/* Main Content Area - with proper scrolling */}
-        <div style={{ 
-          flex: 1, 
-          overflowY: isOnboarding ? 'hidden' : 'auto',
-          WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
-          msOverflowStyle: 'none', // Hide scrollbar in IE/Edge
-          scrollbarWidth: 'none', // Hide scrollbar in Firefox
+        {/* Main Content Area - Add consistent bottom padding for navigation */}
+        <div style={{
+          flex: 1,
+          width: '100%',
+          overflowY: 'auto',
+          overflowX: 'hidden',
           position: 'relative',
-          height: '100%'
+          paddingBottom: isAuthenticated ? '90px' : '0', // Only add padding when authenticated (not during onboarding)
+          scrollbarWidth: 'thin',
+          scrollbarColor: `${colors.darkGray} transparent`,
         }}>
-          {/* Hide scrollbar for Chrome/Safari/Opera */}
-          <style>
-            {`
-              div::-webkit-scrollbar {
-                display: none;
-              }
-            `}
-          </style>
-          {/* Scrollable content wrapper */}
-          <div style={{
-            flex: 1,
-            overflowY: 'auto',
-            height: '100%',
-            paddingBottom: !isOnboarding && isAuthenticated ? '160px' : '0'
-          }}>
-            <Routes>
-              {/* Authentication & Onboarding routes */}
-              <Route path="/onboarding/:step" element={<Onboarding onComplete={handleOnboardingComplete} />} />
-              <Route path="/welcome" element={<Welcome />} />
-              <Route path="/setup" element={<Setup />} />
-              
-              {/* Main app routes */}
-              <Route path="/" element={<HomeScreen />} />
-              <Route path="/pantry" element={<PantryInventory />} />
-              <Route path="/recipes" element={<RecipesScreen />} />
-              <Route path="/recipe/:id" element={<RecipeDetail />} />
-              <Route path="/scan" element={<ScanScreen />} />
-              <Route path="/shopping-list" element={<ShoppingList />} />
-              <Route path="/profile" element={<ProfileScreen />} />
-              
-              {/* Advanced features */}
-              <Route path="/advanced" element={<AdvancedFeaturesScreen />} />
-              <Route path="/price-comparison" element={<PriceComparison />} />
-              <Route path="/store-finder" element={<StoreFinder />} />
-              <Route path="/meal-planning" element={<MealPlanningCalendar />} />
-              <Route path="/smart-calendar" element={<SmartCalendar />} />
-              <Route path="/dietary-preferences" element={<DietaryPreferences />} />
-              
-              {/* Legacy routes for backward compatibility */}
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/success" element={<Success />} />
-              <Route path="/tinder-style" element={<TinderStyle />} />
-              
-              {/* Fallback - 404 with more user-friendly message */}
-              <Route path="*" element={
-                <div style={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: spacing.lg
-                }}>
-                  <Text variant="h2" style={{ marginBottom: spacing.md }}>Page Not Found</Text>
-                  <Text variant="body1" style={{ marginBottom: spacing.lg, textAlign: 'center' }}>
-                    Sorry, the page you are looking for doesn't exist or has been moved.
-                  </Text>
-                  <button 
-                    onClick={() => navigate('/')}
-                    style={{
-                      padding: `${spacing.sm} ${spacing.lg}`,
-                      backgroundColor: colors.primary,
-                      color: colors.white,
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Return to Home
-                  </button>
+          <Routes>
+            {/* Authentication & Onboarding routes */}
+            <Route path="/onboarding/:step" element={<Onboarding onComplete={handleOnboardingComplete} />} />
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/setup" element={<Setup />} />
+            
+            {/* Main app routes */}
+            <Route path="/" element={<HomeScreen />} />
+            <Route path="/pantry" element={<PantryInventory />} />
+            <Route path="/recipes" element={<RecipesScreen />} />
+            <Route path="/recipe/:id" element={<RecipeDetail />} />
+            <Route path="/scan" element={<ScanScreen />} />
+            <Route path="/shopping-list" element={<ShoppingList />} />
+            <Route path="/profile" element={<ProfileScreen />} />
+            <Route path="/search" element={<SearchScreen />} />
+            <Route path="/categories" element={<CategoriesScreen />} />
+            <Route path="/category/:categoryName" element={<CategoryDetail />} />
+            <Route path="/featured" element={<FeaturedScreen />} />
+            <Route path="/popular" element={<PopularScreen />} />
+            <Route path="/notifications" element={<NotificationsScreen />} />
+            
+            {/* Advanced features */}
+            <Route path="/advanced" element={<AdvancedFeaturesScreen />} />
+            <Route path="/price-comparison" element={<PriceComparison />} />
+            <Route path="/store-finder" element={<StoreFinder />} />
+            <Route path="/meal-planning" element={<MealPlanningCalendar />} />
+            <Route path="/smart-calendar" element={<SmartCalendar />} />
+            <Route path="/dietary-preferences" element={<DietaryPreferences />} />
+            <Route path="/ui-demo" element={<UIEnhancementsDemo />} />
+            <Route path="/basic-demo" element={<BasicDemo />} />
+            
+            {/* Legacy routes for backward compatibility */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/tinder-style" element={<TinderStyle />} />
+            
+            {/* Fallback - 404 with more user-friendly message */}
+            <Route path="*" element={
+              <div style={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: spacing.lg
+              }}>
+                <div>Page Not Found</div>
+                <div>
+                  Sorry, the page you are looking for doesn't exist or has been moved.
                 </div>
-              } />
-            </Routes>
-          </div>
+                <button 
+                  onClick={() => navigate('/')}
+                  style={{
+                    padding: `${spacing.sm} ${spacing.lg}`,
+                    backgroundColor: colors.primary,
+                    color: colors.white,
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Return to Home
+                </button>
+              </div>
+            } />
+          </Routes>
         </div>
         
         {/* Bottom Navigation - Only show for authenticated app (not onboarding) */}
         {!isOnboarding && isAuthenticated && (
           <div style={{
             height: '70px',
-            position: 'absolute',
+            position: 'absolute', 
             bottom: 0,
             left: 0,
             right: 0,
@@ -274,44 +272,60 @@ const App: React.FC = () => {
             alignItems: 'center',
             width: '100%',
             zIndex: 100,
+            paddingBottom: '8px', 
           }}>
-            {primaryNavItems.map((item, index) => (
-              <button
-                key={index}
-                onClick={() => navigate(item.path)}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  height: '100%',
-                  padding: '8px 12px',
-                  flex: 1,
-                  color: location.pathname === item.path || 
-                        (item.path === '/advanced' && isAdvancedFeature(location.pathname)) ? 
-                        colors.primary : colors.darkGray
-                }}
-              >
-                {React.createElement(item.icon, { 
-                  size: 24,
-                  color: location.pathname === item.path || 
-                        (item.path === '/advanced' && isAdvancedFeature(location.pathname)) ? 
-                        colors.primary : colors.darkGray
-                })}
-                <span style={{ 
-                  fontSize: '12px', 
-                  marginTop: '4px',
-                  fontWeight: location.pathname === item.path || 
-                              (item.path === '/advanced' && isAdvancedFeature(location.pathname)) ? 
-                              600 : 400
-                }}>
-                  {item.label}
-                </span>
-              </button>
-            ))}
+            {primaryNavItems.map((item, index) => {
+              const isActive = location.pathname === item.path || 
+                              (item.path === '/advanced' && isAdvancedFeature(location.pathname));
+              return (
+                <button
+                  key={index}
+                  onClick={() => navigate(item.path)}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    height: '100%',
+                    padding: '8px 12px',
+                    flex: 1,
+                    color: isActive ? colors.primary : colors.darkGray,
+                    position: 'relative',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  {/* Active indicator dot */}
+                  {isActive && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '6px',
+                      width: '5px',
+                      height: '5px',
+                      borderRadius: '50%',
+                      backgroundColor: colors.primary,
+                    }} />
+                  )}
+                  <div style={{
+                    opacity: isActive ? 1 : 0.7,
+                    transform: isActive ? 'scale(1.1)' : 'scale(1)',
+                    transition: 'all 0.2s ease',
+                  }}>
+                    {item.icon()}
+                  </div>
+                  <span style={{ 
+                    fontSize: '12px', 
+                    marginTop: '4px',
+                    fontWeight: isActive ? '600' : '400',
+                    opacity: isActive ? 1 : 0.8,
+                  }}>
+                    {item.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
@@ -319,4 +333,23 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+// Wrap the app with all providers
+const App: React.FC = () => {
+  return (
+    <ThemeProvider>
+      <LoadingProvider>
+        <OfflineProvider>
+          <AnimationProvider>
+            <ToastProvider>
+              <TourProvider>
+                <AppContent />
+              </TourProvider>
+            </ToastProvider>
+          </AnimationProvider>
+        </OfflineProvider>
+      </LoadingProvider>
+    </ThemeProvider>
+  );
+};
+
+export { App };

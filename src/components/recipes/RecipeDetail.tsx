@@ -207,7 +207,7 @@ export default function RecipeDetail() {
               <button 
                 onClick={() => setLiked(!liked)}
                 style={{
-                  backgroundColor: liked ? `${colors.coral}80` : 'rgba(255,255,255,0.25)',
+                  backgroundColor: liked ? `${colors.accent1}80` : 'rgba(255,255,255,0.25)',
                   border: 'none',
                   borderRadius: '50%',
                   width: '40px',
@@ -289,7 +289,7 @@ export default function RecipeDetail() {
               padding: `${spacing.xs} ${spacing.sm}`,
               backdropFilter: 'blur(4px)',
             }}>
-              <Star size={16} color={colors.accent} fill={colors.accent} style={{ marginRight: '4px' }} />
+              <Star size={16} color={colors.accent1} fill={colors.accent1} style={{ marginRight: '4px' }} />
               <span style={{ color: 'white', fontSize: '14px', fontWeight: 600 }}>{recipe.rating}</span>
               <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', marginLeft: '4px' }}>({recipe.reviews})</span>
             </div>
@@ -324,7 +324,7 @@ export default function RecipeDetail() {
                 backgroundColor: recipe.difficulty === 'Easy' ? 
                   `${colors.success}15` : 
                   recipe.difficulty === 'Medium' ? 
-                  `${colors.accent}15` : 
+                  `${colors.accent1}15` : 
                   `${colors.error}15`,
                 borderRadius: borderRadius.sm,
               }}>
@@ -333,7 +333,7 @@ export default function RecipeDetail() {
                   color={recipe.difficulty === 'Easy' ? 
                     colors.success : 
                     recipe.difficulty === 'Medium' ? 
-                    colors.accent : 
+                    colors.accent1 : 
                     colors.error
                   }
                 >
@@ -352,7 +352,7 @@ export default function RecipeDetail() {
           <Card 
             padding={spacing.md} 
             margin={`0 0 ${spacing.lg}`}
-            background={`linear-gradient(135deg, ${colors.primary}15, ${colors.teal}15)`}
+            background={`linear-gradient(135deg, ${colors.primary}15, ${colors.accent2}15)`}
             borderRadiusSize={borderRadius.lg}
             shadow={shadows.sm}
           >
@@ -621,11 +621,11 @@ export default function RecipeDetail() {
                 <Card 
                   padding={spacing.md} 
                   borderRadiusSize={borderRadius.md}
-                  background={`${colors.primary}10`}
+                  background={`${colors.accent1}10`}
                 >
                   <Text variant="body2" color={colors.darkGray} margin={`0 0 ${spacing.xs}`}>Calories</Text>
                   <Flex align="center" gap={spacing.xs}>
-                    <Text variant="h2" color={colors.primary}>{recipe.nutrition.calories}</Text>
+                    <Text variant="h2" color={colors.accent1}>{recipe.nutrition.calories}</Text>
                     <Text variant="body2" color={colors.midGray}>kcal</Text>
                   </Flex>
                 </Card>
@@ -633,11 +633,11 @@ export default function RecipeDetail() {
                 <Card 
                   padding={spacing.md} 
                   borderRadiusSize={borderRadius.md}
-                  background={`${colors.secondary}10`}
+                  background={`${colors.accent1}10`}
                 >
                   <Text variant="body2" color={colors.darkGray} margin={`0 0 ${spacing.xs}`}>Protein</Text>
                   <Flex align="center" gap={spacing.xs}>
-                    <Text variant="h2" color={colors.secondary}>{recipe.nutrition.protein}</Text>
+                    <Text variant="h2" color={colors.accent1}>{recipe.nutrition.protein}</Text>
                     <Text variant="body2" color={colors.midGray}>g</Text>
                   </Flex>
                 </Card>
@@ -645,11 +645,11 @@ export default function RecipeDetail() {
                 <Card 
                   padding={spacing.md} 
                   borderRadiusSize={borderRadius.md}
-                  background={`${colors.accent}10`}
+                  background={`${colors.accent1}10`}
                 >
                   <Text variant="body2" color={colors.darkGray} margin={`0 0 ${spacing.xs}`}>Carbs</Text>
                   <Flex align="center" gap={spacing.xs}>
-                    <Text variant="h2" color={colors.accent}>{recipe.nutrition.carbs}</Text>
+                    <Text variant="h2" color={colors.accent1}>{recipe.nutrition.carbs}</Text>
                     <Text variant="body2" color={colors.midGray}>g</Text>
                   </Flex>
                 </Card>
@@ -657,11 +657,11 @@ export default function RecipeDetail() {
                 <Card 
                   padding={spacing.md} 
                   borderRadiusSize={borderRadius.md}
-                  background={`${colors.coral}10`}
+                  background={`${colors.accent1}10`}
                 >
                   <Text variant="body2" color={colors.darkGray} margin={`0 0 ${spacing.xs}`}>Fats</Text>
                   <Flex align="center" gap={spacing.xs}>
-                    <Text variant="h2" color={colors.coral}>{recipe.nutrition.fat}</Text>
+                    <Text variant="h2" color={colors.accent1}>{recipe.nutrition.fat}</Text>
                     <Text variant="body2" color={colors.midGray}>g</Text>
                   </Flex>
                 </Card>
@@ -669,12 +669,12 @@ export default function RecipeDetail() {
                 <Card 
                   padding={spacing.md} 
                   borderRadiusSize={borderRadius.md}
-                  background={`${colors.teal}10`}
+                  background={`${colors.accent1}10`}
                 >
                   <div style={{ gridColumn: '1 / span 2' }}>
                     <Text variant="body2" color={colors.darkGray} margin={`0 0 ${spacing.xs}`}>Fiber</Text>
                     <Flex align="center" gap={spacing.xs}>
-                      <Text variant="h2" color={colors.teal}>{recipe.nutrition.fiber}</Text>
+                      <Text variant="h2" color={colors.accent1}>{recipe.nutrition.fiber}</Text>
                       <Text variant="body2" color={colors.midGray}>g</Text>
                     </Flex>
                   </div>
@@ -686,7 +686,11 @@ export default function RecipeDetail() {
       </Container>
       
       {/* Bottom Navigation */}
-      <BottomNavigation items={navigationItems} />
+      <BottomNavigation items={navigationItems.map(item => ({
+        ...item,
+        color: item.isActive ? colors.accent1 : colors.textSecondary,
+        borderBottom: item.isActive ? `2px solid ${colors.accent1}` : 'none',
+      }))} />
     </MobileContainer>
   );
 }

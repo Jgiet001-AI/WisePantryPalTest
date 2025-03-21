@@ -255,7 +255,7 @@ export default function RecipesScreen() {
         <div style={{ marginBottom: spacing.xl }}>
           <Flex justify="space-between" align="center" margin={`${spacing.md} 0`}>
             <Flex align="center" gap={spacing.xs}>
-              <Star size={18} color={colors.accent} />
+              <Star size={18} color={colors.accent1} />
               <Text variant="h3" color={colors.textPrimary}>Featured Recipe</Text>
             </Flex>
           </Flex>
@@ -316,7 +316,7 @@ export default function RecipesScreen() {
                   by {healthyRecipes[2].author}
                 </Text>
                 <Flex align="center" gap="4px">
-                  <Star size={16} color={colors.accent} fill={colors.accent} />
+                  <Star size={16} color={colors.accent1} fill={colors.accent1} />
                   <Text variant="body2" color={colors.textSecondary}>
                     {healthyRecipes[2].rating}
                   </Text>

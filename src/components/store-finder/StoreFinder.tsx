@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { Map, Navigation, Search, MapPin, Phone, Clock, Star, ChevronRight, Info, Locate, Route, Building, Filter } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import { Map, Navigation, Search, MapPin, Phone, Clock, Star, ChevronRight, Info, Locate, Route, Building, Filter, ArrowLeft } from "lucide-react";
 import { 
   Container, 
   Card, 
@@ -174,6 +175,7 @@ export default function StoreFinder() {
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)', 
           borderRadius: '50%' 
         }}
+        icon={<Locate size={20} />}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -329,7 +331,7 @@ export default function StoreFinder() {
           
           {filterOpen && (
             <Card padding={spacing.md} margin={`0 0 ${spacing.md} 0`}>
-              <Text variant="h4" style={{ marginBottom: spacing.sm }}>Filter Options</Text>
+              <Text variant="h3" style={{ marginBottom: spacing.sm }}>Filter Options</Text>
               <Flex direction="column" gap={spacing.xs} style={{ marginBottom: spacing.md }}>
                 <Flex align="center" justify="space-between">
                   <Text variant="body2">Open Now</Text>
@@ -436,7 +438,8 @@ export default function StoreFinder() {
                 <Button 
                   variant="outlined"
                   icon={<Phone size={16} />}
-                  onClick={() => {}}
+                  onClick={() => window.open(`tel:${selectedStore.phone}`)}
+                  style={{ flex: 1 }}
                 >
                   Call
                 </Button>
@@ -444,6 +447,7 @@ export default function StoreFinder() {
                   variant="outlined"
                   icon={<Info size={16} />}
                   onClick={() => setActiveTab('details')}
+                  style={{ flex: 1 }}
                 >
                   Details
                 </Button>
@@ -451,18 +455,21 @@ export default function StoreFinder() {
                   variant="primary"
                   icon={<Navigation size={16} />}
                   onClick={() => {}}
+                  style={{ flex: 1 }}
                 >
                   Directions
                 </Button>
               </Flex>
             </Card>
           )}
-          <Card padding={spacing.md} style={{ height: '300px', position: 'relative' }}>
-            <CardContent>
-              <Text variant="h3">Map View Coming Soon!</Text>
-              <Text variant="body2">Interactive map will be available in the next update.</Text>
-            </CardContent>
-            {mapControls}
+          <Card padding={spacing.md} margin={`0 0 ${spacing.md} 0`}>
+            <div style={{ height: '300px', position: 'relative' }}>
+              <CardContent>
+                <Text variant="h3">Map View Coming Soon!</Text>
+                <Text variant="body2">Interactive map will be available in the next update.</Text>
+              </CardContent>
+              {mapControls}
+            </div>
           </Card>
         </div>
       )}
@@ -536,7 +543,7 @@ export default function StoreFinder() {
                   <Button 
                     variant="outlined"
                     icon={<Phone size={16} />}
-                    onClick={() => {}}
+                    onClick={() => window.open(`tel:${store.phone}`)}
                     style={{ flex: 1 }}
                   >
                     Call
@@ -637,6 +644,8 @@ export default function StoreFinder() {
                   <Button 
                     variant="text" 
                     size="small"
+                    onClick={() => window.open(`tel:${selectedStore.phone}`)}
+                    icon={<Phone size={16} />}
                     style={{ marginLeft: 'auto' }}
                   >
                     Call
