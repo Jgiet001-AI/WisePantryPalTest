@@ -86,12 +86,12 @@ const popularRecipes = [
 
 // Categories with health-focused tags
 const categories = [
-  { id: 1, name: 'Breakfast', icon: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=100&q=80' },
-  { id: 2, name: 'High Protein', icon: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=100&q=80' },
-  { id: 3, name: 'Low Carb', icon: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=100&q=80' },
-  { id: 4, name: 'Plant Based', icon: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=100&q=80' },
-  { id: 5, name: 'Quick Meals', icon: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=100&q=80' },
-  { id: 6, name: 'Meal Prep', icon: 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=100&q=80' }
+  { id: 1, name: 'Breakfast', icon: <img src="https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=100&q=80" alt="Breakfast" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} /> },
+  { id: 2, name: 'High Protein', icon: <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=100&q=80" alt="High Protein" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} /> },
+  { id: 3, name: 'Low Carb', icon: <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=100&q=80" alt="Low Carb" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} /> },
+  { id: 4, name: 'Plant Based', icon: <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=100&q=80" alt="Plant Based" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} /> },
+  { id: 5, name: 'Quick Meals', icon: <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=100&q=80" alt="Quick Meals" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} /> },
+  { id: 6, name: 'Meal Prep', icon: <img src="https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=100&q=80" alt="Meal Prep" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} /> }
 ];
 
 // Home screen component
@@ -109,46 +109,12 @@ export default function HomeScreen() {
     navigate(`/category/${category.toLowerCase().replace(' ', '-')}`);
   };
 
-  // Navigation items - using window.location.pathname for determining active state
-  const navigationItems = [
-    { 
-      icon: <Home size={24} />, 
-      label: 'Home', 
-      isActive: path === '/' || path.includes('/recipe/'),
-      onClick: () => navigate('/') 
-    },
-    { 
-      icon: <Book size={24} />, 
-      label: 'Recipes', 
-      isActive: path === '/recipes' || path.includes('/category/'),
-      onClick: () => navigate('/recipes') 
-    },
-    { 
-      icon: <Plus size={24} />, 
-      label: 'Scan', 
-      isActive: path === '/scan',
-      onClick: () => navigate('/scan') 
-    },
-    { 
-      icon: <ShoppingCart size={24} />, 
-      label: 'Shopping', 
-      isActive: path === '/shopping' || path.includes('/shopping/'),
-      onClick: () => navigate('/shopping') 
-    },
-    { 
-      icon: <User size={24} />, 
-      label: 'Profile', 
-      isActive: path === '/profile',
-      onClick: () => navigate('/profile') 
-    }
-  ];
-
   return (
     <div>
       {/* App Bar with search */}
       <div style={{ 
         padding: `${spacing.md} ${spacing.md} ${spacing.sm}`,
-        background: `linear-gradient(180deg, ${colors.primary} 0%, ${colors.teal} 100%)`,
+        background: `linear-gradient(90deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
         borderBottomLeftRadius: borderRadius.lg,
         borderBottomRightRadius: borderRadius.lg,
         position: 'sticky',
@@ -157,19 +123,30 @@ export default function HomeScreen() {
         boxShadow: shadows.md,
       }}>
         <Flex justify="space-between" align="center" margin={`0 0 ${spacing.md}`}>
-          <Text variant="h2" color={colors.white}>WisePantryPal</Text>
-          <Heart size={24} color={colors.white} />
+          <Text variant="h2" style={{ color: colors.white, margin: 0, fontWeight: 'bold' }}>WisePantryPal</Text>
+          <div style={{ 
+            backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+            borderRadius: '50%',
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backdropFilter: 'blur(4px)'
+          }}>
+            <Heart size={24} color={colors.white} />
+          </div>
         </Flex>
         
         <div style={{ 
           display: 'flex',
-          backgroundColor: `rgba(255, 255, 255, 0.9)`,
+          backgroundColor: colors.white,
           borderRadius: borderRadius.lg,
           padding: `${spacing.xs} ${spacing.md}`,
           alignItems: 'center',
           boxShadow: shadows.sm,
         }}>
-          <Search size={20} color={colors.secondary} style={{ marginRight: spacing.sm }} />
+          <Search size={20} color={colors.primary} style={{ marginRight: spacing.sm }} />
           <input
             type="text"
             placeholder="Search for healthy recipes..."
@@ -179,19 +156,19 @@ export default function HomeScreen() {
               fontSize: '15px',
               width: '100%',
               outline: 'none',
-              color: colors.onBackground,
+              color: colors.textPrimary,
             }}
           />
         </div>
       </div>
 
       {/* Main Content */}
-      <Container padding="0" background={colors.surface}>
-        <div style={{ padding: `${spacing.md} ${spacing.md} ${spacing.xxl}` }}>
+      <Container padding="0" background={colors.background}>
+        <div style={{ padding: `${spacing.md} ${spacing.md} ${spacing.xl}` }}>
           {/* Categories */}
           <div style={{ marginBottom: spacing.lg }}>
             <Flex justify="space-between" align="center" margin={`0 0 ${spacing.sm}`}>
-              <Text variant="h3" color={colors.onBackground}>Categories</Text>
+              <Text variant="h3" color={colors.textPrimary}>Categories</Text>
               <Button
                 variant="text"
                 icon={<ChevronRight size={16} />}
@@ -200,115 +177,80 @@ export default function HomeScreen() {
                 View all
               </Button>
             </Flex>
-            
-            <div style={{ 
-              display: 'flex', 
-              overflowX: 'auto', 
-              gap: spacing.md,
-              paddingBottom: spacing.sm,
-              scrollbarWidth: 'none',
-              WebkitOverflowScrolling: 'touch',
-              msOverflowStyle: 'none'
-            }}>
+            <Grid 
+              columns={2} 
+              gap={spacing.md} 
+              margin={`0 0 ${spacing.lg} 0`}
+            >
               {categories.map((category) => (
-                <div 
+                <Card 
                   key={category.id} 
                   onClick={() => handleCategoryClick(category.name)}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    minWidth: '70px',
-                    cursor: 'pointer',
-                    transition: `all ${animation.medium} ${animation.easing}`,
-                  }}
+                  padding={spacing.md}
+                  background={colors.white}
+                  shadow={shadows.sm}
                 >
-                  <div style={{
-                    width: '70px',
-                    height: '70px',
-                    borderRadius: borderRadius.circle,
-                    overflow: 'hidden',
-                    marginBottom: spacing.xs,
-                    border: `2px solid ${colors.primary}`,
-                    boxShadow: shadows.sm,
-                  }}>
-                    <img 
-                      src={category.icon} 
-                      alt={category.name} 
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  </div>
-                  <Text 
-                    variant="caption" 
-                    align="center" 
-                    style={{ 
-                      fontSize: '12px',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    {category.name}
-                  </Text>
-                </div>
+                  <Flex direction="column" align="center" justify="center">
+                    <div style={{ 
+                      fontSize: '2em', 
+                      marginBottom: spacing.sm, 
+                      color: colors.primary 
+                    }}>{category.icon}</div>
+                    <Text variant="body1" align="center">{category.name}</Text>
+                  </Flex>
+                </Card>
               ))}
-            </div>
+            </Grid>
           </div>
-          
-          {/* Featured Recipes */}
+
+          {/* Featured */}
           <div style={{ marginBottom: spacing.lg }}>
             <Flex justify="space-between" align="center" margin={`0 0 ${spacing.sm}`}>
-              <Text variant="h3" color={colors.onBackground}>Featured</Text>
+              <Text variant="h3" color={colors.textPrimary}>Featured</Text>
               <Button
                 variant="text"
-                icon={<ChevronRight size={16} />}
-                onClick={() => navigate('/recipes')}
+                icon={<ChevronRight size={16} color={colors.primary} />}
+                onClick={() => navigate('/featured')}
+                style={{ color: colors.primary }}
               >
                 View all
               </Button>
             </Flex>
-            
-            <div style={{ 
-              display: 'flex', 
-              overflowX: 'auto',
-              gap: spacing.md,
-              paddingBottom: spacing.sm,
-              scrollbarWidth: 'none',
-              WebkitOverflowScrolling: 'touch',
-              msOverflowStyle: 'none'
-            }}>
+            <Grid 
+              columns={1} 
+              gap={spacing.md} 
+              margin={`0 0 ${spacing.lg} 0`}
+            >
               {featuredRecipes.map((recipe) => (
-                <div 
+                <RecipeCard
                   key={recipe.id}
-                  style={{ minWidth: '230px', maxWidth: '270px' }}
+                  title={recipe.title}
+                  image={recipe.image}
+                  duration={recipe.duration}
+                  difficulty={recipe.difficulty}
+                  category={recipe.category || 'General'}
+                  rating={recipe.rating || 4.5}
+                  author={recipe.author || 'WisePantryPal'}
                   onClick={() => handleRecipeClick(recipe.id)}
-                >
-                  <RecipeCard
-                    title={recipe.title}
-                    image={recipe.image}
-                    duration={recipe.duration}
-                    difficulty={recipe.difficulty}
-                    category={recipe.category}
-                    author={recipe.author}
-                    rating={recipe.rating}
-                  />
-                </div>
+                />
               ))}
-            </div>
+            </Grid>
           </div>
-          
+
           {/* Popular Recipes */}
           <div>
             <Flex justify="space-between" align="center" margin={`0 0 ${spacing.sm}`}>
-              <Text variant="h3" color={colors.onBackground}>Popular</Text>
+              <Text variant="h3" color={colors.textPrimary}>Popular</Text>
               <Button
                 variant="text"
-                icon={<ChevronRight size={16} />}
+                icon={<ChevronRight size={16} color={colors.primary} />}
                 onClick={() => navigate('/popular')}
+                style={{ color: colors.primary }}
               >
                 View all
               </Button>
             </Flex>
-            
-            <Grid columns={2} gap={spacing.md}>
+            <Grid columns={1} gap={spacing.md}>
               {popularRecipes.map((recipe) => (
                 <RecipeCard
                   key={recipe.id}
@@ -316,6 +258,9 @@ export default function HomeScreen() {
                   image={recipe.image}
                   duration={recipe.duration}
                   difficulty={recipe.difficulty}
+                  category={recipe.category || 'General'}
+                  rating={recipe.rating || 4.5}
+                  author={recipe.author || 'WisePantryPal'}
                   onClick={() => handleRecipeClick(recipe.id)}
                 />
               ))}
@@ -323,8 +268,6 @@ export default function HomeScreen() {
           </div>
         </div>
       </Container>
-
-      {/* Bottom Navigation removed to prevent duplication with App.tsx */}
     </div>
   );
 }

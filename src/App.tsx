@@ -1,221 +1,274 @@
-import React from "react";
-import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import './App.css';
+
+// UI Components & Styling
+import { 
+  Home, 
+  BookOpen as Book, 
+  Camera, 
+  ShoppingCart, 
+  MoreHorizontal,
+  Wifi,
+  Battery
+} from 'lucide-react';
+import { colors, spacing, Text } from './components/ui/KitchenStoriesDesign';
+
+// Main Screens
 import HomeScreen from "./components/pages/HomeScreen";
-import RecipeDetail from "./components/recipes/RecipeDetail";
-import PantryInventory from "./components/pantry/PantryInventory";
-import ShoppingList from "./components/shopping/ShoppingList";
 import RecipesScreen from "./components/recipes/RecipesScreen";
+import RecipeDetail from "./components/recipes/RecipeDetail";
 import ScanScreen from "./components/scanning/ScanScreen";
+import ShoppingList from "./components/shopping/ShoppingList";
+import PantryInventory from "./components/pantry/PantryInventory";
 import ProfileScreen from "./components/profile/ProfileScreen";
+
+// Advanced Features
+import AdvancedFeaturesScreen from "./components/advanced/AdvancedFeaturesScreen";
 import PriceComparison from "./components/price-comparison/PriceComparison";
 import StoreFinder from "./components/store-finder/StoreFinder";
 import MealPlanningCalendar from "./components/meal-planning/MealPlanningCalendar";
 import SmartCalendar from "./components/calendar/SmartCalendar";
 import DietaryPreferences from "./components/dietary/DietaryPreferences";
-import AdvancedFeaturesScreen from "./components/advanced/AdvancedFeaturesScreen";
-import { colors, spacing } from './components/ui/KitchenStoriesDesign';
-import { Home as HomeIcon, BookOpen, Camera, ShoppingCart, User, DollarSign, Map, Calendar, Utensils, Settings, Menu, MoreHorizontal } from 'lucide-react';
-import Home from "./components/pages/home";
-import OnboardingFlow from "./components/onboarding/OnboardingFlow";
-import MobileAppPreview from "./components/mobile/MobileAppPreview";
-import LoginForm from "./components/auth/LoginForm";
-import SignUpForm from "./components/auth/SignUpForm";
+
+// Onboarding & Authentication
+import Onboarding from "./components/onboarding/OnboardingFlow";
+import Welcome from "./components/auth/LoginForm";
+import Setup from "./components/auth/SignUpForm";
+
+// Legacy Components (using correct casing and paths)
 import Dashboard from "./components/pages/dashboard";
 import Success from "./components/pages/success";
 import TinderStyle from "./components/pages/TinderStyle";
 
-function App() {
+/**
+ * Main application component handling routing and navigation
+ */
+const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // Helper to check current route
-  const isRoute = (path: string) => location.pathname === path;
-  
-  const isRecipeRouteActive = () => {
-    return location.pathname === '/recipes' || location.pathname.startsWith('/recipe/');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  /**
+   * Check if current route is an advanced feature
+   */
+  const isAdvancedFeature = (path: string): boolean => {
+    return [
+      '/advanced', 
+      '/price-comparison', 
+      '/store-finder', 
+      '/meal-planning', 
+      '/smart-calendar', 
+      '/dietary-preferences'
+    ].includes(path);
   };
 
-  const isAdvancedFeature = () => {
-    const advancedRoutes = [
-      '/advanced-features',
-      '/price-comparison',
-      '/store-finder',
-      '/meal-planning',
-      '/smart-calendar',
-      '/dietary-preferences',
-      '/shopping'
-    ];
-    return advancedRoutes.some(route => location.pathname === route);
+  /**
+   * Handle onboarding completion
+   */
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('hasCompletedOnboarding', 'true');
+    setIsAuthenticated(true);
+    navigate('/');
   };
 
-  // Determine if this is a mobile app route (Kitchen Stories style pages)
-  const isMobileAppRoute = () => [
-    '/', '/recipe', '/pantry', '/shopping', '/recipes', '/profile', '/scan', 
-    '/price-comparison', '/store-finder', '/meal-planning', '/smart-calendar', 
-    '/dietary-preferences', '/advanced-features', '/categories', '/popular', '/search', '/shopping/add'
-  ].some(path => 
-    path === '/' ? location.pathname === path : location.pathname.startsWith(path)
-  );
-
-  // Primary navigation items (bottom nav)
+  // Navigation Items Configuration
   const primaryNavItems = [
-    {
-      icon: <HomeIcon />,
-      label: 'Home',
-      isActive: isRoute('/'),
-      onClick: () => navigate('/'),
-    },
-    {
-      icon: <BookOpen />,
-      label: 'Recipes',
-      isActive: isRecipeRouteActive(),
-      onClick: () => navigate('/recipes'),
-    },
-    {
-      icon: <Camera />,
-      label: 'Scan',
-      isActive: isRoute('/scan'),
-      onClick: () => navigate('/scan'),
-    },
-    {
-      icon: <ShoppingCart />,
-      label: 'Shopping',
-      isActive: isRoute('/shopping'),
-      onClick: () => navigate('/shopping'),
-    },
-    {
-      icon: <MoreHorizontal />,
-      label: 'More',
-      isActive: isAdvancedFeature(),
-      onClick: () => navigate('/advanced-features'),
-    },
+    { path: '/', label: 'Home', icon: Home },
+    { path: '/recipes', label: 'Recipes', icon: Book },
+    { path: '/scan', label: 'Scan', icon: Camera },
+    { path: '/shopping-list', label: 'Shopping', icon: ShoppingCart },
+    { path: '/advanced', label: 'More', icon: MoreHorizontal }
   ];
 
-  // Advanced feature navigation items (accessible from profile or menu)
-  const advancedFeatureItems = [
-    {
-      icon: <DollarSign />,
-      label: 'Price Comparison',
-      isActive: isRoute('/price-comparison'),
-      onClick: () => navigate('/price-comparison'),
-    },
-    {
-      icon: <Map />,
-      label: 'Store Finder',
-      isActive: isRoute('/store-finder'),
-      onClick: () => navigate('/store-finder'),
-    },
-    {
-      icon: <Utensils />,
-      label: 'Meal Planning',
-      isActive: isRoute('/meal-planning'),
-      onClick: () => navigate('/meal-planning'),
-    },
-    {
-      icon: <Calendar />,
-      label: 'Calendar',
-      isActive: isRoute('/calendar'),
-      onClick: () => navigate('/calendar'),
-    },
-    {
-      icon: <Settings />,
-      label: 'Dietary Preferences',
-      isActive: isRoute('/dietary-preferences'),
-      onClick: () => navigate('/dietary-preferences'),
-    },
-    {
-      icon: <Settings />,
-      label: 'Advanced Features',
-      isActive: isRoute('/advanced-features'),
-      onClick: () => navigate('/advanced-features'),
-    },
-  ];
+  // Simulate authentication check
+  useEffect(() => {
+    // Check if user has completed onboarding
+    const hasCompletedOnboarding = localStorage.getItem('hasCompletedOnboarding') === 'true';
+    
+    // If not authenticated and not on onboarding/auth routes, redirect to welcome
+    if (!hasCompletedOnboarding && 
+        !location.pathname.includes('/onboarding') && 
+        !location.pathname.includes('/welcome') &&
+        !location.pathname.includes('/setup')) {
+      navigate('/onboarding/1');
+    } else {
+      // For demo, set authenticated to true if onboarding is complete
+      setIsAuthenticated(hasCompletedOnboarding);
+    }
+    
+    setIsLoading(false);
+  }, [location.pathname, navigate]);
+
+  // Redirect to onboarding if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      // Only redirect if not already on onboarding, welcome or setup pages
+      if (!location.pathname.includes('/onboarding') && 
+          !location.pathname.includes('/welcome') && 
+          !location.pathname.includes('/setup')) {
+        navigate('/onboarding/1');
+      }
+    }
+  }, [isAuthenticated, isLoading, location.pathname, navigate]);
+
+  if (isLoading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Text variant="h3">Loading...</Text>
+      </div>
+    );
+  }
+
+  // Check if we're on the onboarding screen - different layout
+  const isOnboarding = location.pathname.includes('/onboarding');
 
   return (
-    <>
-      {/* Mobile App Container with fixed bottom navigation */}
-      {isMobileAppRoute() && (
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '375px',
-            height: '812px', 
-            margin: '0 auto',
-            border: '10px solid #222',
-            borderRadius: '36px',
-            overflow: 'hidden',
-            position: 'relative',
-            backgroundColor: colors.background,
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          {/* Status Bar */}
-          <div style={{ 
-            height: '44px', 
-            backgroundColor: '#222', 
+    <div className="app-container" style={{
+      height: '100vh',
+      width: '100vw',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: colors.background, // Soft background for the outer frame
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 0,
+      margin: 0,
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      {/* Phone Frame with proper mobile proportions */}
+      <div className="phone-frame" style={{
+        width: '100%',
+        maxWidth: '414px', // Standard mobile width
+        height: '100%',
+        maxHeight: '736px', // Standard mobile height (iPhone 8 Plus dimensions)
+        backgroundColor: colors.surface,
+        borderRadius: isOnboarding ? '0' : '24px',
+        overflow: 'hidden',
+        position: 'relative',
+        border: isOnboarding ? 'none' : '10px solid #151515',
+        display: 'flex',
+        flexDirection: 'column',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+      }}>
+        {/* Status Bar - Only show for authenticated app */}
+        {!isOnboarding && (
+          <div style={{
+            height: '30px',
+            backgroundColor: colors.white,
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '0 16px',
-            color: 'white',
-            fontSize: '14px',
-            flexShrink: 0,
+            borderBottom: `1px solid ${colors.lightGray}`
           }}>
-            <div>9:41</div>
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center',
-              gap: '4px',
-            }}>
-              <span>📶</span>
-              <span>🔋</span>
+            <Text variant="caption">{new Date().toLocaleTimeString()}</Text>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Wifi size={12} />
+              <Battery size={12} />
             </div>
           </div>
-          
-          {/* App Content - Scrollable Content */}
-          <div className="hide-scrollbar" style={{ 
+        )}
+        
+        {/* Main Content Area - with proper scrolling */}
+        <div style={{ 
+          flex: 1, 
+          overflowY: isOnboarding ? 'hidden' : 'auto',
+          WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
+          msOverflowStyle: 'none', // Hide scrollbar in IE/Edge
+          scrollbarWidth: 'none', // Hide scrollbar in Firefox
+          position: 'relative',
+          height: '100%'
+        }}>
+          {/* Hide scrollbar for Chrome/Safari/Opera */}
+          <style>
+            {`
+              div::-webkit-scrollbar {
+                display: none;
+              }
+            `}
+          </style>
+          {/* Scrollable content wrapper */}
+          <div style={{
             flex: 1,
             overflowY: 'auto',
-            paddingBottom: '70px',
+            height: '100%',
+            paddingBottom: !isOnboarding && isAuthenticated ? '160px' : '0'
           }}>
             <Routes>
+              {/* Authentication & Onboarding routes */}
+              <Route path="/onboarding/:step" element={<Onboarding onComplete={handleOnboardingComplete} />} />
+              <Route path="/welcome" element={<Welcome />} />
+              <Route path="/setup" element={<Setup />} />
+              
               {/* Main app routes */}
               <Route path="/" element={<HomeScreen />} />
+              <Route path="/pantry" element={<PantryInventory />} />
               <Route path="/recipes" element={<RecipesScreen />} />
               <Route path="/recipe/:id" element={<RecipeDetail />} />
-              <Route path="/pantry" element={<PantryInventory />} />
-              <Route path="/shopping" element={<ShoppingList />} />
               <Route path="/scan" element={<ScanScreen />} />
+              <Route path="/shopping-list" element={<ShoppingList />} />
               <Route path="/profile" element={<ProfileScreen />} />
               
-              {/* Advanced feature routes */}
-              <Route path="/advanced-features" element={<AdvancedFeaturesScreen />} />
+              {/* Advanced features */}
+              <Route path="/advanced" element={<AdvancedFeaturesScreen />} />
               <Route path="/price-comparison" element={<PriceComparison />} />
               <Route path="/store-finder" element={<StoreFinder />} />
               <Route path="/meal-planning" element={<MealPlanningCalendar />} />
               <Route path="/smart-calendar" element={<SmartCalendar />} />
               <Route path="/dietary-preferences" element={<DietaryPreferences />} />
-              <Route path="/categories" element={<Navigate to="/" />} />
-              <Route path="/popular" element={<Navigate to="/" />} />
-              <Route path="/category/:name" element={<Navigate to="/" />} />
-              <Route path="/search" element={<Navigate to="/" />} />
-              <Route path="/shopping/add" element={<ShoppingList />} />
+              
+              {/* Legacy routes for backward compatibility */}
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/success" element={<Success />} />
+              <Route path="/tinder-style" element={<TinderStyle />} />
+              
+              {/* Fallback - 404 with more user-friendly message */}
+              <Route path="*" element={
+                <div style={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: spacing.lg
+                }}>
+                  <Text variant="h2" style={{ marginBottom: spacing.md }}>Page Not Found</Text>
+                  <Text variant="body1" style={{ marginBottom: spacing.lg, textAlign: 'center' }}>
+                    Sorry, the page you are looking for doesn't exist or has been moved.
+                  </Text>
+                  <button 
+                    onClick={() => navigate('/')}
+                    style={{
+                      padding: `${spacing.sm} ${spacing.lg}`,
+                      backgroundColor: colors.primary,
+                      color: colors.white,
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Return to Home
+                  </button>
+                </div>
+              } />
             </Routes>
           </div>
-          
-          {/* Bottom Navigation */}
+        </div>
+        
+        {/* Bottom Navigation - Only show for authenticated app (not onboarding) */}
+        {!isOnboarding && isAuthenticated && (
           <div style={{
+            height: '70px',
             position: 'absolute',
             bottom: 0,
             left: 0,
             right: 0,
-            height: '70px',
             backgroundColor: colors.white,
-            borderTop: `1px solid ${colors.lightGray || '#EEEEEE'}`,
-            boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.05)',
+            borderTop: `1px solid ${colors.lightGray}`,
+            boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
             display: 'flex',
             justifyContent: 'space-around',
             alignItems: 'center',
@@ -225,7 +278,7 @@ function App() {
             {primaryNavItems.map((item, index) => (
               <button
                 key={index}
-                onClick={item.onClick}
+                onClick={() => navigate(item.path)}
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -235,66 +288,35 @@ function App() {
                   border: 'none',
                   cursor: 'pointer',
                   height: '100%',
-                  padding: `${spacing.xs} ${spacing.sm}`,
+                  padding: '8px 12px',
                   flex: 1,
-                  transition: 'all 0.2s ease',
-                  transform: item.isActive ? 'scale(1.02)' : 'scale(1)',
+                  color: location.pathname === item.path || 
+                        (item.path === '/advanced' && isAdvancedFeature(location.pathname)) ? 
+                        colors.primary : colors.darkGray
                 }}
               >
-                <div style={{ 
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: spacing.xs,
-                  color: item.isActive ? colors.primary : colors.darkGray,
-                  transition: 'all 0.2s ease',
-                  transform: item.isActive ? 'scale(1.1)' : 'scale(1)',
+                {React.createElement(item.icon, { 
+                  size: 24,
+                  color: location.pathname === item.path || 
+                        (item.path === '/advanced' && isAdvancedFeature(location.pathname)) ? 
+                        colors.primary : colors.darkGray
+                })}
+                <span style={{ 
+                  fontSize: '12px', 
+                  marginTop: '4px',
+                  fontWeight: location.pathname === item.path || 
+                              (item.path === '/advanced' && isAdvancedFeature(location.pathname)) ? 
+                              600 : 400
                 }}>
-                  {React.cloneElement(item.icon as React.ReactElement, { 
-                    size: 24
-                  })}
-                </div>
-                
-                <div
-                  style={{
-                    color: item.isActive ? colors.primary : colors.darkGray,
-                    fontWeight: item.isActive ? 600 : 400,
-                    fontSize: '12px',
-                    textAlign: 'center',
-                  }}
-                >
                   {item.label}
-                </div>
+                </span>
               </button>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Original routes (for non-mobile routes) */}
-      {!isMobileAppRoute() && (
-        <Routes>
-          <Route path="/mobile" element={<MobileAppPreview />} />
-          <Route path="/tinder" element={<TinderStyle />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/signup" element={<SignUpForm />} />
-          <Route
-            path="/onboarding"
-            element={
-              <OnboardingFlow onComplete={() => {
-                localStorage.setItem("hasCompletedOnboarding", "true");
-                window.location.href = "/";
-              }} />
-            }
-          />
-          <Route path="/app" element={<MobileAppPreview />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/success" element={<Success />} />
-        </Routes>
-      )}
-    </>
+        )}
+      </div>
+    </div>
   );
-}
+};
 
 export default App;

@@ -1,30 +1,44 @@
 import React, { ReactNode } from 'react';
 
-// Modern colors representing health, trust, and well-being
+// Modern colors inspired by Price Comparison screen
 export const colors = {
-  primary: '#2AC28E', // Fresh mint green (health & well-being)
-  secondary: '#4E67EB', // Vibrant blue (trust)
-  accent: '#FFC857', // Sunshine yellow (vitality & well-being)
-  success: '#38B259', // Green success (health)
-  error: '#FF5C5C', // Soft red error
-  warning: '#FFB347', // Soft orange warning
-  info: '#6CBEE7', // Light blue info (trust)
-  background: '#FFFFFF', // White background
-  surface: '#F8FBFD', // Very light blue-tinted surface
-  onPrimary: '#FFFFFF', // White text on primary
-  onSecondary: '#FFFFFF', // White text on secondary
-  onBackground: '#2F3E56', // Dark blue-gray text on background
-  onSurface: '#2F3E56', // Dark blue-gray text on surface
-  divider: '#EDF2F7', // Light blue-gray divider
+  primary: '#4f46e5', // Indigo
+  primaryLight: '#eef2ff',
+  primaryDark: '#3730a3',
+  secondary: '#9333ea', // Purple
+  secondaryLight: '#f5f3ff',
+  secondaryDark: '#7e22ce',
+  
+  // Accent colors
+  accent1: '#ec4899', // Pink
+  accent2: '#14b8a6', // Teal
+  accent3: '#f97316', // Orange
+  
+  // Status colors
+  success: '#22c55e',
+  successLight: '#dcfce7',
+  error: '#ef4444',
+  errorLight: '#fee2e2',
+  warning: '#eab308',
+  warningLight: '#fef9c3',
+  
+  // Neutral colors
+  white: '#ffffff',
+  background: '#f9fafb',
+  surface: '#ffffff',
+  textPrimary: '#111827',
+  textSecondary: '#6b7280',
+  
   // Additional colors
   lightGray: '#F0F7FF',
-  midGray: '#A0AEC0',
-  darkGray: '#4A5568',
+  midGray: '#9ca3af',
+  darkGray: '#4b5563',
   black: '#1A202C',
-  white: '#FFFFFF',
-  purple: '#9F7AEA', // Purple for accent elements
-  teal: '#38B2AC', // Teal for accent elements
-  coral: '#FF6B81', // Coral for energy and vibrance
+  divider: '#e5e7eb',
+  onPrimary: '#FFFFFF', // White text on primary
+  onSecondary: '#FFFFFF', // White text on secondary
+  onBackground: '#1f2937', // Dark text on background
+  onSurface: '#1f2937', // Dark text on surface
 };
 
 // Typography styles with more modern proportions
@@ -94,13 +108,12 @@ export const borderRadius = {
 
 // Shadows with softer edges
 export const shadows = {
-  sm: '0 2px 8px rgba(0,0,0,0.05)',
-  md: '0 4px 12px rgba(0,0,0,0.07)',
-  lg: '0 8px 20px rgba(0,0,0,0.08)',
-  xl: '0 12px 28px rgba(0,0,0,0.09)',
-  xxl: '0 20px 32px rgba(0,0,0,0.1)',
-  hover: '0 6px 16px rgba(46, 105, 255, 0.15)',
-  card: '0 4px 16px rgba(17, 34, 64, 0.07)',
+  sm: '0 2px 10px rgba(0, 0, 0, 0.05)',
+  md: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  lg: '0 10px 15px rgba(0, 0, 0, 0.1)',
+  xl: '0 15px 25px rgba(0, 0, 0, 0.1)',
+  card: '0 2px 10px rgba(0, 0, 0, 0.05)',
+  button: '0 4px 6px rgba(0, 0, 0, 0.1)',
 };
 
 // Animation durations
@@ -784,8 +797,8 @@ export const RecipeCard: React.FC<{
         <Flex justify="space-between" align="center">
           <Text variant="body2" style={{ color: colors.darkGray }}>{author}</Text>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} style={{ color: i < Math.round(rating) ? colors.accent : colors.lightGray }}>★</div>
+            {[...Array(5)].map((_, i) => (
+              <div key={i} style={{ color: i < Math.round(rating) ? colors.accent1 : colors.lightGray }}>★</div>
             ))}
           </div>
         </Flex>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { ArrowRight, Store, Share2, MapPin, PiggyBank, Calendar, ListChecks, ShoppingCart, Scan, Home, Utensils, MessageCircle } from "lucide-react";
 import { Progress } from "../ui/progress";
 
@@ -149,63 +150,93 @@ const ShoppingListScreen = () => (
 
 const WelcomeScreen = ({ onNext }: { onNext: () => void }) => (
   <div className="h-full flex flex-col">
-    <div className="bg-emerald-500 text-white p-5 flex flex-col items-center justify-center h-full">
-      <ShoppingCart className="h-12 w-12 mb-4" />
-      <h3 className="text-2xl font-bold mb-2">WisePantryPal</h3>
-      <p className="text-base mb-8 text-center">Your smart kitchen assistant that helps you save money and reduce waste</p>
+    <div 
+      className="bg-emerald-500 text-white flex flex-col items-center justify-center h-full"
+      style={{ padding: '2rem' }}
+    >
+      <div className="flex-1"></div>
+      <ShoppingCart 
+        className="h-20 w-20 mb-6 text-white" 
+        strokeWidth={1.5} 
+        fill="transparent"
+      />
+      <h1 className="text-3xl font-bold mb-2 text-center">WisePantryPal</h1>
+      <p className="text-base mb-12 text-center max-w-xs mx-auto opacity-95">
+        Your smart kitchen assistant that helps you save money and reduce waste
+      </p>
       <button 
         onClick={onNext}
-        className="bg-white text-emerald-600 px-6 py-3 rounded-full font-medium flex items-center shadow-md"
+        className="bg-white text-emerald-600 px-8 py-3 rounded-full font-medium flex items-center justify-center"
+        style={{ minWidth: "180px" }}
       >
         Get Started
-        <ArrowRight className="ml-2 h-4 w-4" />
+        <ArrowRight className="ml-2 h-5 w-5" />
       </button>
+      <div className="flex-1"></div>
     </div>
   </div>
 );
 
-export interface OnboardingFlowProps {
+interface OnboardingProps {
   onComplete: () => void;
 }
 
-export default function OnboardingFlow({
-  onComplete,
-}: OnboardingFlowProps) {
-  const [currentStep, setCurrentStep] = useState(0);
+export default function Onboarding({ onComplete }: OnboardingProps) {
+  const { step } = useParams<{ step: string }>();
+  const navigate = useNavigate();
   
+  // Define all steps in the onboarding process
   const steps = [
-    { title: "Welcome", component: <WelcomeScreen onNext={() => setCurrentStep(1)} /> },
-    { title: "Price Comparison", component: <PriceComparisonScreen /> },
-    { title: "Social Hub", component: <SocialHubScreen /> },
-    { title: "Store Finder", component: <StoreFinderScreen /> },
-    { title: "Waste & Budget", component: <BudgetTrackingScreen /> },
-    { title: "Smart Calendar", component: <SmartCalendarScreen /> },
-    { title: "Shopping List", component: <ShoppingListScreen /> },
+    { name: "Welcome", component: <WelcomeScreen onNext={() => handleNext()} /> },
+    { name: "Price Comparison", component: <PriceComparisonScreen /> },
+    { name: "Store Finder", component: <StoreFinderScreen /> },
+    { name: "Smart Calendar", component: <SmartCalendarScreen /> },
+    { name: "Shopping List", component: <ShoppingListScreen /> },
+    { name: "Pantry Management", component: <BudgetTrackingScreen /> }
   ];
   
+  // Convert URL step parameter to number (default to 1 if invalid)
+  const stepNumber = parseInt(step || "1", 10);
+  const validStepIndex = Math.min(Math.max(stepNumber - 1, 0), steps.length - 1);
+  
+  // State to track current step
+  const [currentStep, setCurrentStep] = useState(validStepIndex);
+  
+  // Update step when URL parameter changes
+  useEffect(() => {
+    setCurrentStep(validStepIndex);
+  }, [step, validStepIndex]);
+  
+  // Calculate progress percentage for progress bar
   const currentProgress = ((currentStep) / (steps.length - 1)) * 100;
   
+  // Handle next button click
   const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
+    const nextStep = currentStep + 1;
+    if (nextStep < steps.length) {
+      navigate(`/onboarding/${nextStep + 1}`);
     } else {
       localStorage.setItem("hasCompletedOnboarding", "true");
       onComplete();
     }
   };
   
+  // Handle back button click
   const handleBack = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      navigate(`/onboarding/${currentStep}`);
     }
   };
 
+  // Check if we're on the final step
+  const isLastStep = currentStep === steps.length - 1;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-emerald-50 p-4">
-      {/* Phone container with design more like the actual screenshot */}
-      <div className="relative w-[375px] h-[667px] rounded-[28px] shadow-xl overflow-hidden border-8 border-gray-900">
-        {/* Status bar with time, etc */}
-        <div className="bg-gray-900 text-white flex justify-between items-center px-5 pt-4 pb-2 text-xs">
+    <div className="flex h-full w-full items-center justify-center bg-emerald-50">
+      {/* Phone simulation container */}
+      <div className="w-full h-full max-w-md max-h-[667px] overflow-hidden flex flex-col">
+        {/* Status bar - maintained for consistency with the screenshot */}
+        <div className="bg-gray-900 text-white flex justify-between items-center px-5 pt-2 pb-2 text-xs">
           <span>04:09 PM</span>
           <div className="flex items-center space-x-1">
             <div className="flex space-x-0.5">
@@ -220,7 +251,7 @@ export default function OnboardingFlow({
         
         {/* Only show progress bar on feature screens, not on welcome */}
         {currentStep > 0 && (
-          <div className="px-4 pt-3 pb-2 bg-emerald-50">
+          <div className="px-4 pt-2 pb-1 bg-emerald-50">
             <Progress value={currentProgress} className="h-2 bg-gray-200" indicatorClassName="bg-emerald-500" />
             <p className="mt-1 text-xs text-emerald-700 font-medium">
               Step {currentStep} of {steps.length - 1}
@@ -228,14 +259,56 @@ export default function OnboardingFlow({
           </div>
         )}
         
-        {/* Content area */}
-        <div className="h-[575px] overflow-hidden bg-emerald-50">
+        {/* Content area - fixed height to prevent overflow */}
+        <div className="bg-emerald-50 flex-1 overflow-auto" style={{ maxHeight: "calc(100vh - 140px)" }}>
           {steps[currentStep].component}
         </div>
         
-        {/* Navigation */}
-        {currentStep > 0 && (
-          <div className="absolute bottom-0 inset-x-0 flex justify-between p-4 bg-white border-t border-gray-200">
+        {/* Bottom navigation area - conditional rendering */}
+        {currentStep === 0 ? (
+          // Empty div for welcome screen (navigation handled inside WelcomeScreen)
+          <div></div>
+        ) : isLastStep ? (
+          // Final step - show tab navigation + finish button
+          <div className="mt-auto">
+            {/* Finish button placed above the tabs */}
+            <div className="w-full flex justify-center py-2 bg-emerald-50">
+              <button 
+                onClick={onComplete}
+                className="px-6 py-2 rounded-full bg-emerald-500 text-white font-medium flex items-center"
+              >
+                Finish
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </button>
+            </div>
+            
+            {/* Tab navigation preview */}
+            <div className="flex justify-between p-2 bg-white border-t border-gray-200 text-xs text-gray-600">
+              <div className="flex flex-col items-center">
+                <Home className="h-5 w-5 text-emerald-600" />
+                <span>Home</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <ShoppingCart className="h-5 w-5" />
+                <span>Pantry</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <Scan className="h-5 w-5" />
+                <span>Scan</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <Utensils className="h-5 w-5" />
+                <span>Meals</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <MessageCircle className="h-5 w-5" />
+                <span>Chat</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          // Steps 1-5 - show back/next navigation
+          <div className="flex justify-between p-3 bg-white border-t border-gray-200 mt-auto">
             <button
               onClick={handleBack}
               className="px-4 py-2 rounded-full border border-emerald-500 text-emerald-600 font-medium"
@@ -246,35 +319,9 @@ export default function OnboardingFlow({
               onClick={handleNext}
               className="px-4 py-2 rounded-full bg-emerald-500 text-white font-medium flex items-center"
             >
-              {currentStep === steps.length - 1 ? "Finish" : "Next"}
+              Next
               <ArrowRight className="ml-2 h-4 w-4" />
             </button>
-          </div>
-        )}
-        
-        {/* Tab navigation at bottom (only shown on final screen for preview) */}
-        {currentStep === steps.length - 1 && (
-          <div className="absolute bottom-0 inset-x-0 flex justify-between p-2 bg-white border-t border-gray-200 text-xs text-gray-600">
-            <div className="flex flex-col items-center">
-              <Home className="h-5 w-5 text-emerald-600" />
-              <span>Home</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <ShoppingCart className="h-5 w-5" />
-              <span>Pantry</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Scan className="h-5 w-5" />
-              <span>Scan</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Utensils className="h-5 w-5" />
-              <span>Meals</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <MessageCircle className="h-5 w-5" />
-              <span>Chat</span>
-            </div>
           </div>
         )}
       </div>

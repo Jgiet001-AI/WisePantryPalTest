@@ -134,16 +134,16 @@ export default function RecipesScreen() {
         position: 'sticky',
         top: 0,
         zIndex: 10,
-        backgroundColor: colors.background,
+        backgroundColor: colors.surface,
       }}>
         <Flex justify="space-between" align="center" margin={`0 0 ${spacing.md}`}>
-          <Text variant="h2" color={colors.onBackground}>Recipes</Text>
+          <Text variant="h2" color={colors.textPrimary}>Recipes</Text>
           <Heart size={24} color={colors.primary} />
         </Flex>
         
         <div style={{ 
           display: 'flex',
-          backgroundColor: colors.surface,
+          backgroundColor: colors.background,
           borderRadius: borderRadius.lg,
           padding: `${spacing.xs} ${spacing.md}`,
           alignItems: 'center',
@@ -151,7 +151,7 @@ export default function RecipesScreen() {
           marginBottom: spacing.md,
           border: `1px solid ${colors.divider}`
         }}>
-          <Search size={20} color={colors.secondary} style={{ marginRight: spacing.sm }} />
+          <Search size={20} color={colors.primary} style={{ marginRight: spacing.sm }} />
           <input
             type="text"
             placeholder="Search healthy recipes..."
@@ -161,10 +161,10 @@ export default function RecipesScreen() {
               fontSize: '15px',
               width: '100%',
               outline: 'none',
-              color: colors.onBackground,
+              color: colors.textPrimary,
             }}
           />
-          <Filter size={20} color={colors.secondary} />
+          <Filter size={20} color={colors.primary} />
         </div>
 
         {/* Category Pills */}
@@ -206,7 +206,7 @@ export default function RecipesScreen() {
               </div>
               <Text 
                 variant="caption" 
-                color={activeFilter === category.name ? colors.primary : colors.onBackground}
+                color={activeFilter === category.name ? colors.primary : colors.textPrimary}
                 align="center"
               >
                 {category.name}
@@ -231,7 +231,7 @@ export default function RecipesScreen() {
               style={{
                 padding: `${spacing.xs} ${spacing.sm}`,
                 backgroundColor: activeDietary === filter.name ? colors.primary : colors.surface,
-                color: activeDietary === filter.name ? colors.white : colors.darkGray,
+                color: activeDietary === filter.name ? colors.white : colors.textPrimary,
                 borderRadius: borderRadius.xl,
                 display: 'flex',
                 alignItems: 'center',
@@ -256,7 +256,7 @@ export default function RecipesScreen() {
           <Flex justify="space-between" align="center" margin={`${spacing.md} 0`}>
             <Flex align="center" gap={spacing.xs}>
               <Star size={18} color={colors.accent} />
-              <Text variant="h3" color={colors.onBackground}>Featured Recipe</Text>
+              <Text variant="h3" color={colors.textPrimary}>Featured Recipe</Text>
             </Flex>
           </Flex>
           
@@ -308,16 +308,16 @@ export default function RecipesScreen() {
               </Badge>
             </div>
             <div style={{ padding: spacing.md }}>
-              <Text variant="h3" color={colors.onBackground} margin={`0 0 ${spacing.xs}`}>
+              <Text variant="h3" color={colors.textPrimary} margin={`0 0 ${spacing.xs}`}>
                 {healthyRecipes[2].title}
               </Text>
               <Flex justify="space-between" align="center" margin={`0 0 ${spacing.xs}`}>
-                <Text variant="body2" color={colors.darkGray}>
+                <Text variant="body2" color={colors.textSecondary}>
                   by {healthyRecipes[2].author}
                 </Text>
                 <Flex align="center" gap="4px">
                   <Star size={16} color={colors.accent} fill={colors.accent} />
-                  <Text variant="body2" color={colors.darkGray}>
+                  <Text variant="body2" color={colors.textSecondary}>
                     {healthyRecipes[2].rating}
                   </Text>
                 </Flex>
@@ -342,11 +342,11 @@ export default function RecipesScreen() {
           <Flex justify="space-between" align="center" margin={`${spacing.md} 0`}>
             <Flex align="center" gap={spacing.xs}>
               <Leaf size={18} color={colors.primary} />
-              <Text variant="h3" color={colors.onBackground}>Healthy Recipes</Text>
+              <Text variant="h3" color={colors.textPrimary}>Healthy Recipes</Text>
             </Flex>
             <Flex align="center" gap={spacing.xs} style={{ cursor: 'pointer' }}>
-              <Text variant="body2" color={colors.secondary}>Sort</Text>
-              <Filter size={16} color={colors.secondary} />
+              <Text variant="body2" color={colors.textSecondary}>Sort</Text>
+              <Filter size={16} color={colors.primary} />
             </Flex>
           </Flex>
           
