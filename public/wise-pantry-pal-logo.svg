@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="800" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Robot Body - Egg-shaped -->
+  <ellipse cx="400" cy="450" rx="220" ry="280" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="8"/>
+  
+  <!-- Base with LED Ring -->
+  <ellipse cx="400" cy="670" rx="160" ry="40" fill="#E6E6E6" stroke="#D9D9D9" stroke-width="4"/>
+  <ellipse cx="400" cy="670" rx="140" ry="30" fill="none" stroke="#FFA500" stroke-width="10" stroke-dasharray="20,10" opacity="0.7"/>
+  
+  <!-- Face/Screen (circular LCD display) -->
+  <circle cx="400" cy="380" r="140" fill="#FFFFFF" stroke="#E6E6E6" stroke-width="8"/>
+  
+  <!-- Eyes - Happy expression -->
+  <g id="eyes">
+    <!-- Left Eye -->
+    <circle cx="340" cy="380" r="40" fill="#333333"/>
+    <circle cx="350" cy="370" r="12" fill="#FFFFFF"/>
+    
+    <!-- Right Eye -->
+    <circle cx="460" cy="380" r="40" fill="#333333"/>
+    <circle cx="470" cy="370" r="12" fill="#FFFFFF"/>
+    
+    <!-- Eyebrows - slight happy curve -->
+    <path d="M310 320 Q340 310 370 320" stroke="#333333" stroke-width="8" fill="none"/>
+    <path d="M430 320 Q460 310 490 320" stroke="#333333" stroke-width="8" fill="none"/>
+  </g>
+  
+  <!-- Speaker grille (mouth) -->
+  <rect x="360" cy="450" width="80" height="20" rx="10" fill="#E0E0E0"/>
+  <line x1="370" y1="460" x2="430" y2="460" stroke="#CCCCCC" stroke-width="3"/>
+  <line x1="375" y1="454" x2="425" y2="454" stroke="#CCCCCC" stroke-width="2"/>
+  <line x1="380" y1="466" x2="420" y2="466" stroke="#CCCCCC" stroke-width="2"/>
+  
+  <!-- Chef's Hat (sensor) -->
+  <path d="M400 200 Q340 210 340 240 Q340 260 400 260 Q460 260 460 240 Q460 210 400 200Z" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="3"/>
+  <rect x="370" y="240" width="60" height="20" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="3"/>
+  
+  <!-- Retractable Arms -->
+  <!-- Left Arm (partially extended) -->
+  <path d="M180 450 Q220 440 240 450" stroke="#FFA500" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <circle cx="180" cy="450" r="15" fill="#FFD700"/>
+  
+  <!-- Right Arm (partially extended) -->
+  <path d="M620 450 Q580 440 560 450" stroke="#FFA500" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <circle cx="620" cy="450" r="15" fill="#FFD700"/>
+  
+  <!-- Apron Decal -->
+  <path d="M330 500 L470 500 L450 620 L350 620 Z" fill="#FFA500" opacity="0.8"/>
+  <rect x="370" y="480" width="60" height="10" fill="#FFA500"/>
+  
+  <!-- Recipe Screen on chest -->
+  <rect x="350" y="540" width="100" height="60" rx="10" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="3"/>
+  <line x1="360" y1="560" x2="440" y2="560" stroke="#E0E0E0" stroke-width="2"/>
+  <line x1="360" y1="580" x2="410" y2="580" stroke="#E0E0E0" stroke-width="2"/>
+  
+  <!-- Heart emoji for success -->
+  <text x="420" y="575" font-family="Arial" font-size="20" fill="#FF6B6B">❤️</text>
+</svg>

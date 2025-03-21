@@ -9,7 +9,18 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Trash2, Edit, AlertTriangle } from "lucide-react";
+import { Search, Plus, Trash2, Edit, AlertTriangle, ArrowLeft, Filter, Home, Book, ShoppingCart, User } from "lucide-react";
+import {
+  MobileContainer,
+  Container,
+  Text,
+  Flex,
+  Divider,
+  colors,
+  spacing,
+  BottomNavigation
+} from '../ui/KitchenStoriesDesign';
+import { useNavigate } from "react-router-dom";
 
 interface PantryItem {
   id: string;
@@ -70,20 +81,38 @@ const mockPantryItems: PantryItem[] = [
   },
   {
     id: "6",
-    name: "Tomatoes",
-    category: "Produce",
-    quantity: 5,
-    unit: "count",
-    expiryDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000),
+    name: "Canned Tomatoes",
+    category: "Canned Goods",
+    quantity: 3,
+    unit: "cans",
+    expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     addedDate: new Date(),
   },
   {
     id: "7",
-    name: "Canned Beans",
-    category: "Pantry",
-    quantity: 3,
-    unit: "cans",
+    name: "Olive Oil",
+    category: "Oils & Vinegars",
+    quantity: 1,
+    unit: "bottle",
+    expiryDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
+    addedDate: new Date(),
+  },
+  {
+    id: "8",
+    name: "Rice",
+    category: "Grains",
+    quantity: 5,
+    unit: "lbs",
     expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    addedDate: new Date(),
+  },
+  {
+    id: "9",
+    name: "Greek Yogurt",
+    category: "Dairy",
+    quantity: 2,
+    unit: "containers",
+    expiryDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
     addedDate: new Date(),
   },
 ];
@@ -97,172 +126,326 @@ export default function PantryInventory({
   onAddItem = () => {},
   onEditItem = () => {},
 }: PantryInventoryProps) {
-  const [pantryItems, setPantryItems] = useState<PantryItem[]>(mockPantryItems);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [pantryItems, setPantryItems] = useState<PantryItem[]>(mockPantryItems);
+  const navigate = useNavigate();
 
+  // Get unique categories for filter
   const categories = Array.from(
-    new Set(pantryItems.map((item) => item.category)),
+    new Set(pantryItems.map((item) => item.category))
   );
 
+  // Filter items based on search and category
   const filteredItems = pantryItems.filter((item) => {
-    const matchesSearch = item.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory
-      ? item.category === selectedCategory
-      : true;
-    return matchesSearch && matchesCategory;
+    return (
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (selectedCategory === null || item.category === selectedCategory)
+    );
   });
 
+  // Sort items by expiry date
+  const sortedItems = [...filteredItems].sort(
+    (a, b) => a.expiryDate.getTime() - b.expiryDate.getTime()
+  );
+
+  // Check if an item is expiring soon (within 3 days)
   const isExpiringSoon = (date: Date) => {
-    const daysUntilExpiry = Math.ceil(
-      (date.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
-    );
-    return daysUntilExpiry <= 3;
+    const currentDate = new Date();
+    const diffTime = date.getTime() - currentDate.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 3 && diffDays > 0;
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  };
-
-  const removeItem = (id: string) => {
+  // Remove item from pantry
+  const handleRemoveItem = (id: string) => {
     setPantryItems(pantryItems.filter((item) => item.id !== id));
   };
 
+  // Format date to display
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   return (
-    <Card className="w-full bg-white">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Pantry Inventory</CardTitle>
-            <CardDescription>
-              Manage your food items and track expiration dates
-            </CardDescription>
-          </div>
-          <Button
-            onClick={onAddItem}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            <Plus className="h-4 w-4 mr-2" /> Add Item
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-grow">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search items..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            <div className="flex flex-wrap gap-2">
+    <MobileContainer>
+      {/* App Bar */}
+      <div style={{ 
+        padding: spacing.md, 
+        backgroundColor: colors.background,
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        borderBottom: `1px solid ${colors.divider}`,
+      }}>
+        <Flex justify="space-between" align="center">
+          <Flex align="center" gap={spacing.sm}>
+            <ArrowLeft 
+              size={24} 
+              color={colors.secondary} 
+              onClick={() => navigate(-1)}
+              style={{ cursor: 'pointer' }}
+            />
+            <Text variant="h2">Pantry Inventory</Text>
+          </Flex>
+          <Filter 
+            size={24} 
+            color={selectedCategory ? colors.primary : colors.secondary}
+            onClick={() => setSelectedCategory(null)}
+            style={{ cursor: 'pointer' }}
+          />
+        </Flex>
+      </div>
+
+      <Container padding={`0 0 ${spacing.xl}`}>
+        <div style={{ 
+          overflowY: 'auto', 
+          height: 'calc(100% - 120px)', // Account for bottom nav
+          paddingBottom: '60px'
+        }}>
+          {/* Search and Add */}
+          <div style={{ padding: spacing.md }}>
+            <Flex gap={spacing.md} margin={`0 0 ${spacing.md} 0`}>
+              <div style={{ 
+                position: 'relative',
+                flex: 1
+              }}>
+                <Input
+                  placeholder="Search pantry items..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: `${spacing.sm} ${spacing.md} ${spacing.sm} ${spacing.xl}`,
+                    borderRadius: '8px',
+                    border: `1px solid ${colors.divider}`,
+                    outline: 'none',
+                    fontSize: '16px',
+                  }}
+                />
+                <Search
+                  size={18}
+                  style={{
+                    position: 'absolute',
+                    left: spacing.sm,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: colors.darkGray,
+                  }}
+                />
+              </div>
+              <Button
+                onClick={onAddItem}
+                style={{
+                  backgroundColor: colors.primary,
+                  color: colors.white,
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: `${spacing.sm} ${spacing.md}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: spacing.xs,
+                  cursor: 'pointer',
+                }}
+              >
+                <Plus size={18} />
+                <span>Add</span>
+              </Button>
+            </Flex>
+
+            {/* Category Pills */}
+            <Flex gap={spacing.xs} wrap="nowrap" style={{ overflowX: 'auto', paddingBottom: spacing.sm }}>
+              <div
+                onClick={() => setSelectedCategory(null)}
+                style={{
+                  padding: `${spacing.xs} ${spacing.sm}`,
+                  backgroundColor: selectedCategory === null ? colors.primary : colors.lightGray,
+                  color: selectedCategory === null ? colors.white : colors.darkGray,
+                  borderRadius: '16px',
+                  fontSize: '14px',
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  marginRight: spacing.xs,
+                }}
+              >
+                All
+              </div>
               {categories.map((category) => (
-                <Badge
+                <div
                   key={category}
-                  variant={
-                    selectedCategory === category ? "default" : "outline"
-                  }
-                  className={`cursor-pointer ${selectedCategory === category ? "bg-green-600" : "hover:bg-green-100"}`}
-                  onClick={() =>
-                    setSelectedCategory(
-                      selectedCategory === category ? null : category,
-                    )
-                  }
+                  onClick={() => setSelectedCategory(category)}
+                  style={{
+                    padding: `${spacing.xs} ${spacing.sm}`,
+                    backgroundColor: selectedCategory === category ? colors.primary : colors.lightGray,
+                    color: selectedCategory === category ? colors.white : colors.darkGray,
+                    borderRadius: '16px',
+                    fontSize: '14px',
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                    marginRight: spacing.xs,
+                  }}
                 >
                   {category}
-                </Badge>
+                </div>
               ))}
-            </div>
+            </Flex>
           </div>
 
-          {filteredItems.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500">
-                No items found. Add some items to your pantry!
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-medium">Item</th>
-                    <th className="text-left py-3 px-4 font-medium">
-                      Category
-                    </th>
-                    <th className="text-left py-3 px-4 font-medium">
-                      Quantity
-                    </th>
-                    <th className="text-left py-3 px-4 font-medium">Expiry</th>
-                    <th className="text-right py-3 px-4 font-medium">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredItems.map((item) => (
-                    <tr key={item.id} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4">{item.name}</td>
-                      <td className="py-3 px-4">
-                        <Badge
-                          variant="outline"
-                          className="bg-gray-100 text-gray-800"
+          <Divider margin={`${spacing.xs} 0 ${spacing.md} 0`} />
+
+          {/* Pantry Items */}
+          <div style={{ padding: `0 ${spacing.md}` }}>
+            {sortedItems.length > 0 ? (
+              sortedItems.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    backgroundColor: colors.background,
+                    borderRadius: '8px',
+                    padding: spacing.md,
+                    marginBottom: spacing.md,
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                    border: isExpiringSoon(item.expiryDate) ? `1px solid ${colors.warning}` : 'none',
+                  }}
+                >
+                  <Flex justify="space-between" align="flex-start">
+                    <div>
+                      <Text variant="h3">{item.name}</Text>
+                      <Flex gap={spacing.md} margin={`${spacing.xs} 0`}>
+                        <Text variant="body2" color={colors.darkGray}>
+                          {item.quantity} {item.unit}
+                        </Text>
+                        <div
+                          style={{
+                            padding: `${spacing.xs} ${spacing.sm}`,
+                            backgroundColor: colors.lightGray,
+                            color: colors.darkGray,
+                            borderRadius: '16px',
+                            fontSize: '12px',
+                          }}
                         >
                           {item.category}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4">
-                        {item.quantity} {item.unit}
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-1">
-                          {isExpiringSoon(item.expiryDate) && (
-                            <AlertTriangle className="h-4 w-4 text-amber-500" />
-                          )}
-                          <span
-                            className={
-                              isExpiringSoon(item.expiryDate)
-                                ? "text-amber-600 font-medium"
-                                : ""
-                            }
-                          >
-                            {formatDate(item.expiryDate)}
-                          </span>
                         </div>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-gray-500 hover:text-blue-600"
-                            onClick={() => onEditItem(item)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-gray-500 hover:text-red-600"
-                            onClick={() => removeItem(item.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                      </Flex>
+                      <Flex align="center" gap={spacing.xs}>
+                        {isExpiringSoon(item.expiryDate) && (
+                          <AlertTriangle size={16} color={colors.warning} />
+                        )}
+                        <Text
+                          variant="caption"
+                          color={
+                            isExpiringSoon(item.expiryDate)
+                              ? colors.warning
+                              : colors.darkGray
+                          }
+                        >
+                          Expires: {formatDate(item.expiryDate)}
+                        </Text>
+                      </Flex>
+                    </div>
+                    <Flex>
+                      <button
+                        onClick={() => onEditItem(item)}
+                        style={{
+                          backgroundColor: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: spacing.xs,
+                          marginRight: spacing.xs,
+                        }}
+                      >
+                        <Edit size={18} color={colors.darkGray} />
+                      </button>
+                      <button
+                        onClick={() => handleRemoveItem(item.id)}
+                        style={{
+                          backgroundColor: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: spacing.xs,
+                        }}
+                      >
+                        <Trash2 size={18} color={colors.error} />
+                      </button>
+                    </Flex>
+                  </Flex>
+                </div>
+              ))
+            ) : (
+              <div style={{ textAlign: 'center', padding: `${spacing.xl} 0` }}>
+                <Text variant="body1" color={colors.darkGray}>
+                  No items found in your pantry.
+                </Text>
+                <Button
+                  onClick={onAddItem}
+                  style={{
+                    backgroundColor: colors.primary,
+                    color: colors.white,
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: `${spacing.sm} ${spacing.md}`,
+                    marginTop: spacing.md,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: spacing.xs,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Plus size={18} />
+                  <span>Add Items</span>
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </Container>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation 
+        items={[
+          {
+            icon: <Home size={24} />,
+            label: "Home",
+            isActive: window.location.pathname === '/',
+            onClick: () => navigate('/')
+          },
+          {
+            icon: <Book size={24} />,
+            label: "Recipes",
+            isActive: window.location.pathname.includes('/recipes'),
+            onClick: () => navigate('/recipes')
+          },
+          {
+            icon: <Plus size={24} style={{ 
+              backgroundColor: colors.primary, 
+              color: colors.white,
+              borderRadius: '50%',
+              padding: '8px',
+              width: '40px',
+              height: '40px',
+              marginBottom: '8px'
+            }} />,
+            label: "Scan",
+            isActive: window.location.pathname === '/scan',
+            onClick: () => navigate('/scan')
+          },
+          {
+            icon: <ShoppingCart size={24} />,
+            label: "Shopping",
+            isActive: window.location.pathname === '/shopping',
+            onClick: () => navigate('/shopping')
+          },
+          {
+            icon: <User size={24} />,
+            label: "Profile",
+            isActive: window.location.pathname === '/profile',
+            onClick: () => navigate('/profile')
+          }
+        ]}
+      />
+    </MobileContainer>
   );
 }

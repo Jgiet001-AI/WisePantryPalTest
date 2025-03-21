@@ -1,0 +1,6 @@
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4">
+      <div className="w-full max-w-md mx-auto">
+        {/* Phone frame */}
+        <div className="relative border-8 border-gray-900 rounded-[40px] overflow-hidden bg-white shadow-xl">
+          {/* Rest of the component */}

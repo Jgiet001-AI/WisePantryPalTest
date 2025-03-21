@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="150" cy="150" r="145" fill="#FFEDD5" stroke="#F97316" stroke-width="3"/>
+  
+  <!-- Robot Body -->
+  <rect x="90" y="120" width="120" height="120" rx="30" fill="#F97316" />
+  <rect x="94" y="124" width="112" height="112" rx="26" fill="#FB923C" />
+  
+  <!-- Robot Head -->
+  <rect x="110" y="70" width="80" height="80" rx="20" fill="#F97316" />
+  <rect x="114" y="74" width="72" height="72" rx="16" fill="#FDBA74" />
+  
+  <!-- Robot Eyes -->
+  <circle cx="130" cy="100" r="12" fill="white" />
+  <circle cx="130" cy="100" r="8" fill="#0EA5E9" />
+  <circle cx="127" cy="97" r="3" fill="white" />
+  
+  <circle cx="170" cy="100" r="12" fill="white" />
+  <circle cx="170" cy="100" r="8" fill="#0EA5E9" />
+  <circle cx="167" cy="97" r="3" fill="white" />
+  
+  <!-- Robot Mouth -->
+  <path d="M130 125C136.667 132.333 163.333 132.333 170 125" stroke="#334155" stroke-width="4" stroke-linecap="round" />
+  
+  <!-- Robot Antenna -->
+  <rect x="145" y="50" width="10" height="20" rx="5" fill="#F97316" />
+  <circle cx="150" cy="40" r="8" fill="#F97316" />
+  <circle cx="150" cy="40" r="5" fill="#FEF3C7" />
+  
+  <!-- Robot Arms - Left -->
+  <path d="M90 160C90 160 70 160 60 150C50 140 55 125 65 120C75 115 80 125 80 135C80 145 90 145 90 145" fill="#F97316" />
+  
+  <!-- Robot Arms - Right -->
+  <path d="M210 160C210 160 230 160 240 150C250 140 245 125 235 120C225 115 220 125 220 135C220 145 210 145 210 145" fill="#F97316" />
+  
+  <!-- Robot Panel Lights -->
+  <circle cx="115" cy="170" r="8" fill="#FEF3C7" />
+  <circle cx="115" cy="170" r="5" fill="#FBBF24" />
+  
+  <circle cx="145" cy="170" r="8" fill="#FEF3C7" />
+  <circle cx="145" cy="170" r="5" fill="#FBBF24" />
+  
+  <circle cx="175" cy="170" r="8" fill="#FEF3C7" />
+  <circle cx="175" cy="170" r="5" fill="#FBBF24" />
+  
+  <!-- Robot Legs -->
+  <rect x="110" y="240" width="25" height="20" rx="5" fill="#F97316" />
+  <rect x="165" y="240" width="25" height="20" rx="5" fill="#F97316" />
+  
+  <!-- Chef Hat -->
+  <path d="M110 70C110 55 130 40 150 40C170 40 190 55 190 70" fill="white" stroke="#F97316" stroke-width="2" />
+  <path d="M110 70H190" stroke="#F97316" stroke-width="2" />
+  
+  <!-- Shadow -->
+  <ellipse cx="150" cy="265" rx="60" ry="10" fill="#F97316" fill-opacity="0.3" />
+</svg>
