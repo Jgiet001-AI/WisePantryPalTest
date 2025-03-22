@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  MobileContainer,
   Container,
   Text,
   Flex,
@@ -82,12 +81,21 @@ export default function ScanScreen() {
   };
 
   return (
-    <div>
+    <Container 
+      style={{ 
+        padding: 0, 
+        maxWidth: '100%', 
+        height: '100%', 
+        display: 'flex', 
+        flexDirection: 'column',
+        overflowY: 'auto'
+      }}
+    >
       {/* Header */}
       <Container 
-        padding={`${spacing.md} ${spacing.md}`}
-        background={colors.primary}
         style={{
+          padding: `${spacing.md} ${spacing.md}`,
+          background: colors.primary,
           borderBottomLeftRadius: borderRadius.lg,
           borderBottomRightRadius: borderRadius.lg,
           position: 'sticky',
@@ -112,13 +120,13 @@ export default function ScanScreen() {
       </Container>
 
       {/* Main Content */}
-      <Container padding={`${spacing.md} ${spacing.md} ${spacing.xxl}`}>
+      <Container style={{ padding: spacing.md }}>
         {/* Mode Selection */}
         {!isCameraActive && !scanResult && (
           <>
-            <Text variant="h3" margin={`0 0 ${spacing.md}`}>Select Scan Method</Text>
+            <Text variant="h3" style={{ margin: `0 0 ${spacing.md}`}}>Select Scan Method</Text>
             
-            <Flex direction="column" gap={spacing.md} margin={`0 0 ${spacing.xl}`}>
+            <Flex direction="column" gap={spacing.md} style={{ margin: `0 0 ${spacing.xl}`}}>
               <Button
                 onClick={() => {
                   setScanMode('barcode');
@@ -136,7 +144,7 @@ export default function ScanScreen() {
                 <Flex align="center" gap={spacing.md}>
                   <Barcode size={32} />
                   <div>
-                    <Text variant="h3" margin={`0 0 ${spacing.xs}`}>Barcode Scan</Text>
+                    <Text variant="h3" style={{ margin: `0 0 ${spacing.xs}`}}>Barcode Scan</Text>
                     <Text variant="body2" color={colors.darkGray}>
                       Scan product barcodes to add items to your pantry
                     </Text>
@@ -161,7 +169,7 @@ export default function ScanScreen() {
                 <Flex align="center" gap={spacing.md}>
                   <Image size={32} />
                   <div>
-                    <Text variant="h3" margin={`0 0 ${spacing.xs}`}>Image Recognition</Text>
+                    <Text variant="h3" style={{ margin: `0 0 ${spacing.xs}`}}>Image Recognition</Text>
                     <Text variant="body2" color={colors.darkGray}>
                       Take a photo of multiple items at once
                     </Text>
@@ -319,7 +327,7 @@ export default function ScanScreen() {
                 marginBottom: spacing.md,
               }}
             >
-              <Text variant="h3" margin={`0 0 ${spacing.md}`}>Scan Results</Text>
+              <Text variant="h3" style={{ margin: `0 0 ${spacing.md}`}}>Scan Results</Text>
               
               <div
                 style={{
@@ -332,7 +340,7 @@ export default function ScanScreen() {
                 <Text variant="body1">{scanResult}</Text>
               </div>
               
-              <Text variant="h3" margin={`0 0 ${spacing.sm}`}>What would you like to do?</Text>
+              <Text variant="h3" style={{ margin: `0 0 ${spacing.sm}`}}>What would you like to do?</Text>
               
               <Flex direction="column" gap={spacing.sm}>
                 <Button 
@@ -371,6 +379,6 @@ export default function ScanScreen() {
           </div>
         )}
       </Container>
-    </div>
+    </Container>
   );
 }

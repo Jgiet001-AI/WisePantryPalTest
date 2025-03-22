@@ -65,64 +65,65 @@ export default function AdvancedFeaturesScreen() {
   ];
 
   return (
-    <div>
-      <Container padding={`${spacing.lg} ${spacing.md}`}>
-        {/* Header */}
-        <Text variant="h1" color={colors.onBackground} margin={`0 0 ${spacing.lg}`}>
-          More Features
-        </Text>
-        
-        {/* Advanced Features */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: spacing.md,
-        }}>
-          {advancedFeatures.map((feature, index) => (
-            <div 
-              key={index}
-              onMouseEnter={() => setHoveredCard(index)}
-              onMouseLeave={() => setHoveredCard(null)}
-              style={{
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                transform: hoveredCard === index ? 'translateY(-2px)' : 'none',
-              }}
+    <Container style={{ 
+      padding: `${spacing.lg} ${spacing.md}`,
+      paddingBottom: '90px' // Ensure content isn't cut off by bottom nav
+    }}>
+      {/* Header */}
+      <Text variant="h1" color={colors.onBackground} margin={`0 0 ${spacing.lg}`}>
+        More Features
+      </Text>
+      
+      {/* Advanced Features */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: spacing.md,
+      }}>
+        {advancedFeatures.map((feature, index) => (
+          <div 
+            key={index}
+            onMouseEnter={() => setHoveredCard(index)}
+            onMouseLeave={() => setHoveredCard(null)}
+            style={{
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              transform: hoveredCard === index ? 'translateY(-2px)' : 'none',
+            }}
+          >
+            <Card 
+              background={colors.white}
+              shadow={hoveredCard === index ? shadows.md : shadows.sm}
+              padding={spacing.md}
+              onClick={() => navigate(feature.path)}
             >
-              <Card 
-                background={colors.white}
-                shadow={hoveredCard === index ? shadows.md : shadows.sm}
-                padding={spacing.md}
-                onClick={() => navigate(feature.path)}
-              >
-                <Flex justify="space-between" align="center">
-                  <Flex gap={spacing.md} align="center">
-                    <div style={{
-                      backgroundColor: `${colors.primary}15`,
-                      padding: spacing.sm,
-                      borderRadius: borderRadius.circle,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                      {feature.icon}
-                    </div>
-                    <div>
-                      <Text variant="h3" color={colors.onBackground} margin={`0 0 ${spacing.xs}`}>
-                        {feature.title}
-                      </Text>
-                      <Text variant="body2" color={colors.darkGray}>
-                        {feature.description}
-                      </Text>
-                    </div>
-                  </Flex>
-                  <ChevronRight size={20} color={colors.darkGray} />
+              <Flex justify="space-between" align="center">
+                <Flex gap={spacing.md} align="center">
+                  <div style={{
+                    backgroundColor: `${colors.primary}15`,
+                    padding: spacing.sm,
+                    borderRadius: borderRadius.circle,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    {feature.icon}
+                  </div>
+                  <div>
+                    <Text variant="h3" color={colors.onBackground} margin={`0 0 ${spacing.xs}`}>
+                      {feature.title}
+                    </Text>
+                    <Text variant="body2" color={colors.darkGray}>
+                      {feature.description}
+                    </Text>
+                  </div>
                 </Flex>
-              </Card>
-            </div>
-          ))}
-        </div>
-      </Container>
-    </div>
+                <ChevronRight size={20} color={colors.darkGray} />
+              </Flex>
+            </Card>
+          </div>
+        ))}
+      </div>
+    </Container>
   );
 }

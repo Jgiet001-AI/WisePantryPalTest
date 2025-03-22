@@ -1,21 +1,20 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
-  MobileContainer,
   Container,
   Text,
   Flex,
-  Divider,
   Button,
-  Badge,
   Card,
   colors,
   spacing,
-  borderRadius,
   shadows,
+  borderRadius,
+  Divider,
+  Badge,
   animation,
   BottomNavigation
-} from '../ui/KitchenStoriesDesign';
+} from "../ui/KitchenStoriesDesign";
 import { 
   ArrowLeft, 
   Clock, 
@@ -155,7 +154,16 @@ export default function RecipeDetail() {
   const missingIngredients = recipe.ingredients.filter(ing => !ing.inPantry);
   
   return (
-    <MobileContainer withBottomNav={true}>
+    <Container 
+      style={{ 
+        padding: 0,
+        maxWidth: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflowY: 'auto'
+      }}
+    >
       {/* Hero image with back button */}
       <div style={{ position: 'relative' }}>
         <img 
@@ -298,15 +306,18 @@ export default function RecipeDetail() {
       </div>
       
       {/* Recipe content */}
-      <Container padding={`${spacing.md} ${spacing.md} ${spacing.xxl}`} background={colors.surface}>
+      <Container style={{ 
+        padding: `${spacing.md} ${spacing.md} ${spacing.xxl}`, 
+        background: colors.surface
+      }}>
         <div style={{ 
           overflowY: 'auto', 
           paddingBottom: spacing.xxl 
         }}>
           {/* Recipe title and quick info */}
-          <Text variant="h1" margin={`0 0 ${spacing.sm}`}>{recipe.title}</Text>
+          <Text variant="h1" style={{ margin: `0 0 ${spacing.sm}` }}>{recipe.title}</Text>
           
-          <Flex justify="space-between" align="center" margin={`0 0 ${spacing.md}`}>
+          <Flex justify="space-between" align="center" style={{ margin: `0 0 ${spacing.md}` }}>
             <Flex align="center" gap={spacing.xs}>
               <div style={{ 
                 display: 'flex', 
@@ -350,13 +361,15 @@ export default function RecipeDetail() {
           
           {/* Health benefits callout */}
           <Card 
-            padding={spacing.md} 
-            margin={`0 0 ${spacing.lg}`}
-            background={`linear-gradient(135deg, ${colors.primary}15, ${colors.accent2}15)`}
-            borderRadiusSize={borderRadius.lg}
-            shadow={shadows.sm}
+            style={{
+              padding: spacing.md, 
+              margin: `0 0 ${spacing.lg}`,
+              background: `linear-gradient(135deg, ${colors.primary}15, ${colors.accent2}15)`,
+              borderRadius: borderRadius.lg,
+              boxShadow: shadows.sm
+            }}
           >
-            <Flex align="center" gap={spacing.xs} margin={`0 0 ${spacing.sm}`}>
+            <Flex align="center" gap={spacing.xs} style={{ margin: `0 0 ${spacing.sm}` }}>
               <Award size={20} color={colors.primary} />
               <Text variant="h3" color={colors.onBackground}>Health Benefits</Text>
             </Flex>
@@ -382,7 +395,7 @@ export default function RecipeDetail() {
           </Card>
           
           {/* Description */}
-          <Text variant="body1" margin={`0 0 ${spacing.lg}`}>{recipe.description}</Text>
+          <Text variant="body1" style={{ margin: `0 0 ${spacing.lg}` }}>{recipe.description}</Text>
           
           {/* Tab navigation */}
           <div style={{
@@ -468,7 +481,7 @@ export default function RecipeDetail() {
           {/* Tab content */}
           {activeTab === 'ingredients' && (
             <div>
-              <Flex justify="space-between" align="center" margin={`0 0 ${spacing.sm}`}>
+              <Flex justify="space-between" align="center" style={{ margin: `0 0 ${spacing.sm}` }}>
                 <Text variant="h3">Ingredients ({recipe.ingredients.length})</Text>
                 {missingIngredients.length > 0 && (
                   <Button 
@@ -514,7 +527,7 @@ export default function RecipeDetail() {
                         </div>
                       )}
                     </Flex>
-                    <Flex align="center" gap={spacing.xs} margin={`${spacing.xs} 0 0`}>
+                    <Flex align="center" gap={spacing.xs} style={{ margin: `${spacing.xs} 0 0` }}>
                       <Text variant="caption" color={colors.midGray}>{ingredient.amount}</Text>
                       <Text variant="caption" color={colors.midGray}>•</Text>
                       <Text variant="caption" color={colors.primary}>{ingredient.benefit}</Text>
@@ -560,7 +573,7 @@ export default function RecipeDetail() {
           
           {activeTab === 'instructions' && (
             <div>
-              <Text variant="h3" margin={`0 0 ${spacing.md}`}>Step by Step</Text>
+              <Text variant="h3" style={{ margin: `0 0 ${spacing.md}` }}>Step by Step</Text>
               
               {recipe.steps.map((step, index) => (
                 <div 
@@ -611,7 +624,7 @@ export default function RecipeDetail() {
           
           {activeTab === 'nutrition' && (
             <div>
-              <Text variant="h3" margin={`0 0 ${spacing.md}`}>Nutrition Facts</Text>
+              <Text variant="h3" style={{ margin: `0 0 ${spacing.md}` }}>Nutrition Facts</Text>
               
               <div style={{
                 display: 'grid',
@@ -619,11 +632,13 @@ export default function RecipeDetail() {
                 gap: spacing.md,
               }}>
                 <Card 
-                  padding={spacing.md} 
-                  borderRadiusSize={borderRadius.md}
-                  background={`${colors.accent1}10`}
+                  style={{
+                    padding: spacing.md, 
+                    borderRadius: borderRadius.md,
+                    background: `${colors.accent1}10`
+                  }}
                 >
-                  <Text variant="body2" color={colors.darkGray} margin={`0 0 ${spacing.xs}`}>Calories</Text>
+                  <Text variant="body2" color={colors.darkGray} style={{ margin: `0 0 ${spacing.xs}` }}>Calories</Text>
                   <Flex align="center" gap={spacing.xs}>
                     <Text variant="h2" color={colors.accent1}>{recipe.nutrition.calories}</Text>
                     <Text variant="body2" color={colors.midGray}>kcal</Text>
@@ -631,11 +646,13 @@ export default function RecipeDetail() {
                 </Card>
                 
                 <Card 
-                  padding={spacing.md} 
-                  borderRadiusSize={borderRadius.md}
-                  background={`${colors.accent1}10`}
+                  style={{
+                    padding: spacing.md, 
+                    borderRadius: borderRadius.md,
+                    background: `${colors.accent1}10`
+                  }}
                 >
-                  <Text variant="body2" color={colors.darkGray} margin={`0 0 ${spacing.xs}`}>Protein</Text>
+                  <Text variant="body2" color={colors.darkGray} style={{ margin: `0 0 ${spacing.xs}` }}>Protein</Text>
                   <Flex align="center" gap={spacing.xs}>
                     <Text variant="h2" color={colors.accent1}>{recipe.nutrition.protein}</Text>
                     <Text variant="body2" color={colors.midGray}>g</Text>
@@ -643,11 +660,13 @@ export default function RecipeDetail() {
                 </Card>
                 
                 <Card 
-                  padding={spacing.md} 
-                  borderRadiusSize={borderRadius.md}
-                  background={`${colors.accent1}10`}
+                  style={{
+                    padding: spacing.md, 
+                    borderRadius: borderRadius.md,
+                    background: `${colors.accent1}10`
+                  }}
                 >
-                  <Text variant="body2" color={colors.darkGray} margin={`0 0 ${spacing.xs}`}>Carbs</Text>
+                  <Text variant="body2" color={colors.darkGray} style={{ margin: `0 0 ${spacing.xs}` }}>Carbs</Text>
                   <Flex align="center" gap={spacing.xs}>
                     <Text variant="h2" color={colors.accent1}>{recipe.nutrition.carbs}</Text>
                     <Text variant="body2" color={colors.midGray}>g</Text>
@@ -655,11 +674,13 @@ export default function RecipeDetail() {
                 </Card>
                 
                 <Card 
-                  padding={spacing.md} 
-                  borderRadiusSize={borderRadius.md}
-                  background={`${colors.accent1}10`}
+                  style={{
+                    padding: spacing.md, 
+                    borderRadius: borderRadius.md,
+                    background: `${colors.accent1}10`
+                  }}
                 >
-                  <Text variant="body2" color={colors.darkGray} margin={`0 0 ${spacing.xs}`}>Fats</Text>
+                  <Text variant="body2" color={colors.darkGray} style={{ margin: `0 0 ${spacing.xs}` }}>Fats</Text>
                   <Flex align="center" gap={spacing.xs}>
                     <Text variant="h2" color={colors.accent1}>{recipe.nutrition.fat}</Text>
                     <Text variant="body2" color={colors.midGray}>g</Text>
@@ -667,12 +688,14 @@ export default function RecipeDetail() {
                 </Card>
                 
                 <Card 
-                  padding={spacing.md} 
-                  borderRadiusSize={borderRadius.md}
-                  background={`${colors.accent1}10`}
+                  style={{
+                    padding: spacing.md, 
+                    borderRadius: borderRadius.md,
+                    background: `${colors.accent1}10`
+                  }}
                 >
                   <div style={{ gridColumn: '1 / span 2' }}>
-                    <Text variant="body2" color={colors.darkGray} margin={`0 0 ${spacing.xs}`}>Fiber</Text>
+                    <Text variant="body2" color={colors.darkGray} style={{ margin: `0 0 ${spacing.xs}` }}>Fiber</Text>
                     <Flex align="center" gap={spacing.xs}>
                       <Text variant="h2" color={colors.accent1}>{recipe.nutrition.fiber}</Text>
                       <Text variant="body2" color={colors.midGray}>g</Text>
@@ -691,6 +714,6 @@ export default function RecipeDetail() {
         color: item.isActive ? colors.accent1 : colors.textSecondary,
         borderBottom: item.isActive ? `2px solid ${colors.accent1}` : 'none',
       }))} />
-    </MobileContainer>
+    </Container>
   );
 }

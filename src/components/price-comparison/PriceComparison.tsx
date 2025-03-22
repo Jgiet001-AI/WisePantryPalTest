@@ -24,6 +24,8 @@ import {
   Text,
   Button,
   Card,
+  Container,
+  Flex,
   colors,
   spacing,
   shadows,
@@ -254,11 +256,11 @@ const PriceComparison: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh',
+    <Container style={{ 
       background: `linear-gradient(135deg, ${modernColors.primaryLight} 0%, ${modernColors.gray50} 100%)`,
       position: 'relative',
-      paddingBottom: '80px'
+      paddingBottom: '90px', // Ensure content isn't cut off by bottom nav
+      padding: 0
     }}>
       {/* Header with gradient */}
       <div style={{ 
@@ -919,7 +921,7 @@ const PriceComparison: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </Container>
   );
 };
 

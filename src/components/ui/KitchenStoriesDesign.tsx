@@ -1,4 +1,11 @@
 import React, { ReactNode, useState } from 'react';
+import {
+  TextProps,
+  ButtonProps,
+  CardProps,
+  ContainerProps,
+  FlexProps
+} from './KitchenStoriesDesignTypes';
 
 // Modern colors inspired by Price Comparison screen with improved contrast
 export const colors = {
@@ -32,11 +39,12 @@ export const colors = {
   midGray: '#9ca3af',
   darkGray: '#4b5563',
   black: '#1A202C',
-  divider: '#e5e7eb',
+  divider: '#e5e7eb', // Border color for inputs and cards
   onPrimary: '#FFFFFF', // White text on primary
   onSecondary: '#FFFFFF', // White text on secondary
   onBackground: '#111827', // Dark text on background
   onSurface: '#1f2937', // Dark text on surface
+  border: '#e5e7eb', // Border color for inputs and cards
 };
 
 // Color semantic meanings for consistent application
@@ -155,20 +163,18 @@ export const animation = {
 };
 
 // Common components
-export const Container: React.FC<{
-  children: ReactNode;
-  padding?: string;
-  maxWidth?: string;
-  background?: string;
-  style?: React.CSSProperties;
-}> = ({ children, padding = spacing.md, maxWidth = '100%', background = colors.background, style = {} }) => {
+export const Container: React.FC<ContainerProps> = ({ 
+  children, 
+  style = {} 
+}) => {
   return (
     <div 
       style={{ 
-        padding, 
-        maxWidth, 
+        padding: spacing.md, 
+        width: '100%', 
+        maxWidth: '373px', 
         margin: '0 auto', 
-        background,
+        background: colors.background,
         height: '100%',
         boxSizing: 'border-box',
         transition: `all ${animation.medium} ${animation.easing}`,
@@ -181,15 +187,16 @@ export const Container: React.FC<{
 };
 
 // Card component with enhanced styling and hover effects
-export function Card({ 
+export const Card: React.FC<CardProps> = ({ 
   children, 
   padding = spacing.md, 
   margin = '0', 
   background = colors.white, 
   borderRadiusSize = borderRadius.md,
   shadow = shadows.card,
-  onClick = null
-}) {
+  onClick = null,
+  style = {}
+}) => {
   const [isHovered, setIsHovered] = React.useState(false);
   
   return (
@@ -203,9 +210,10 @@ export function Card({
         background,
         borderRadius: borderRadiusSize,
         boxShadow: isHovered && onClick ? shadows.hover : shadow,
-        transition: 'all 0.2s ease',
-        transform: isHovered && onClick ? 'translateY(-2px)' : 'translateY(0)',
+        transition: `all ${animation.medium} ${animation.easing}`,
         cursor: onClick ? 'pointer' : 'default',
+        transform: isHovered && onClick ? 'translateY(-2px)' : 'translateY(0)',
+        ...style
       }}
     >
       {children}
@@ -214,7 +222,7 @@ export function Card({
 };
 
 // Button component with enhanced accessibility and feedback states
-export function Button({ 
+export const Button: React.FC<ButtonProps> = ({ 
   children, 
   variant = 'primary', 
   fullWidth = false, 
@@ -222,8 +230,9 @@ export function Button({
   disabled = false,
   icon = null,
   size = 'medium',
-  style = {}
-}) {
+  style = {},
+  type = 'button'
+}) => {
   const [isPressed, setIsPressed] = useState(false);
   
   // Size configurations
@@ -313,6 +322,7 @@ export function Button({
         position: 'relative',
         overflow: 'hidden',
         ...style,
+        type
       }}
     >
       {icon && <span style={{ display: 'flex', alignItems: 'center' }}>{icon}</span>}
@@ -367,20 +377,14 @@ export const Divider: React.FC<{
 };
 
 // Text component
-export const Text: React.FC<{
-  children: ReactNode;
-  variant?: keyof typeof typography;
-  color?: string;
-  align?: 'left' | 'center' | 'right';
-  margin?: string;
-  style?: React.CSSProperties;
-}> = ({ 
+export const Text: React.FC<TextProps> = ({ 
   children, 
   variant = 'body1', 
   color = colors.onBackground, 
   align = 'left',
   margin = '0',
-  style = {}
+  style = {},
+  onClick
 }) => {
   const getStyles = () => {
     const baseStyle = {
@@ -436,36 +440,20 @@ export const Text: React.FC<{
   };
 
   return (
-    <div style={getStyles()}>
+    <div style={getStyles()} onClick={onClick}>
       {children}
     </div>
   );
 };
 
 // Flex component
-export const Flex: React.FC<{
-  children: ReactNode;
-  direction?: 'row' | 'column';
-  justify?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around';
-  align?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline';
-  gap?: string;
-  wrap?: 'nowrap' | 'wrap' | 'wrap-reverse';
-  width?: string;
-  height?: string;
-  padding?: string;
-  margin?: string;
-  style?: React.CSSProperties;
-}> = ({ 
+export const Flex: React.FC<FlexProps> = ({ 
   children, 
   direction = 'row', 
   justify = 'flex-start', 
   align = 'center',
   gap = '0',
   wrap = 'nowrap',
-  width = 'auto',
-  height = 'auto',
-  padding = '0',
-  margin = '0',
   style = {}
 }) => {
   return (
@@ -477,10 +465,6 @@ export const Flex: React.FC<{
         alignItems: align,
         gap,
         flexWrap: wrap,
-        width,
-        height,
-        padding,
-        margin,
         ...style
       }}
     >
@@ -630,15 +614,31 @@ export const MobileContainer: React.FC<{
   children: ReactNode;
   withBottomNav?: boolean;
 }> = ({ children, withBottomNav = true }) => {
+  console.log("RENDERING MOBILE CONTAINER", new Date().toISOString());
+  
+  // Prevent nesting of MobileContainer components
+  const childrenArray = React.Children.toArray(children);
+  const hasMobileContainerChild = childrenArray.some(child => 
+    React.isValidElement(child) && 
+    (child.type === MobileContainer || 
+     (typeof child.type === 'function' && 
+      child.type.name === 'MobileContainer'))
+  );
+  
+  if (hasMobileContainerChild) {
+    console.error("Nested MobileContainer detected! This will cause layout issues.");
+    // Return children without wrapping in another MobileContainer
+    return <>{children}</>;
+  }
+  
   return (
     <div
       style={{
-        width: '100%',
-        maxWidth: '375px',
-        height: '812px', 
+        width: '393px', // iPhone 16 Pro width - exact dimension
+        height: '852px', // iPhone 16 Pro height - exact dimension
         margin: '0 auto',
-        border: '10px solid #222',
-        borderRadius: '36px',
+        border: '10px solid #000',
+        borderRadius: '44px', // iPhone 16 Pro corner radius
         overflow: 'hidden',
         position: 'relative',
         backgroundColor: colors.background,
@@ -650,7 +650,7 @@ export const MobileContainer: React.FC<{
       {/* Status Bar */}
       <div style={{ 
         height: '44px', 
-        backgroundColor: '#222', 
+        backgroundColor: '#000', 
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
