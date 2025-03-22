@@ -8,6 +8,8 @@ import { OfflineProvider } from "./contexts/OfflineContext";
 import { AnimationProvider, ToastProvider } from "./components/ui/Animations";
 import { TourProvider } from "./components/ui/OnboardingTour";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
+import AppHeader from "./components/layout/AppHeader";
 
 // Authentication & Onboarding
 import Onboarding from "./components/onboarding/OnboardingFlow";
@@ -50,6 +52,7 @@ import CategoryDetail from "./components/categories/CategoryDetail";
 import FeaturedScreen from "./components/featured/FeaturedScreen";
 import PopularScreen from "./components/popular/PopularScreen";
 import NotificationsScreen from "./components/notifications/NotificationsScreen";
+import NotificationTestPage from "./components/test/NotificationTestPage";
 
 /**
  * Protected route component that redirects to login if not authenticated
@@ -122,6 +125,23 @@ const AppContent: React.FC = () => {
     );
   };
 
+  const getScreenTitle = (path: string) => {
+    switch (path) {
+      case '/':
+        return 'Home';
+      case '/recipes':
+        return 'Recipes';
+      case '/scan':
+        return 'Scan';
+      case '/shopping-list':
+        return 'Shopping';
+      case '/advanced':
+        return 'More';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div style={{
       width: '393px', // iPhone 16 Pro width
@@ -139,6 +159,13 @@ const AppContent: React.FC = () => {
         overflowY: 'auto',
         paddingBottom: shouldShowBottomNav() ? '60px' : '0'
       }}>
+        {/* Global App Header with Notification Bell */}
+        {isAuthenticated && isOnboardingCompleted && !location.pathname.includes('/welcome') && 
+         !location.pathname.includes('/setup') && !location.pathname.includes('/login') && 
+         !location.pathname.includes('/signup') && !location.pathname.includes('/forgot-password') && (
+          <AppHeader title={getScreenTitle(location.pathname)} />
+        )}
+        
         <Routes>
         {/* Authentication Routes */}
         <Route path="/login" element={<Login />} />
@@ -174,6 +201,7 @@ const AppContent: React.FC = () => {
         {/* Demo Routes */}
         <Route path="/ui-enhancements" element={<ProtectedRoute element={<UIEnhancementsDemo />} />} />
         <Route path="/basic-demo" element={<ProtectedRoute element={<BasicDemo />} />} />
+        <Route path="/notification-test" element={<ProtectedRoute element={<NotificationTestPage />} />} />
         
         {/* Additional Routes */}
         <Route path="/search" element={<ProtectedRoute element={<SearchScreen />} />} />
@@ -233,24 +261,26 @@ const AppContent: React.FC = () => {
 /**
  * Root application component with all providers
  */
-function App() {
+const App: React.FC = () => {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <LoadingProvider>
+    <AuthProvider>
+      <LoadingProvider>
+        <ThemeProvider>
           <OfflineProvider>
             <AnimationProvider>
               <ToastProvider>
                 <TourProvider>
-                  <AppContent />
+                  <NotificationProvider>
+                    <AppContent />
+                  </NotificationProvider>
                 </TourProvider>
               </ToastProvider>
             </AnimationProvider>
           </OfflineProvider>
-        </LoadingProvider>
-      </AuthProvider>
-    </ThemeProvider>
+        </ThemeProvider>
+      </LoadingProvider>
+    </AuthProvider>
   );
-}
+};
 
 export { App };

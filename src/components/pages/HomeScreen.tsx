@@ -16,6 +16,7 @@ import {
   shadows
 } from '../ui/KitchenStoriesDesign';
 import { Search, Home, Book, ShoppingCart, User, Plus, ChevronRight, Heart, TrendingUp, Award, Zap } from 'lucide-react';
+import NotificationTest from '../notifications/NotificationTest';
 
 // Sample data for recipes with healthier options
 const featuredRecipes = [
@@ -121,66 +122,26 @@ export default function HomeScreen() {
 
   return (
     <div>
-      {/* App Bar with search */}
+      {/* Search Bar */}
       <div style={{ 
-        padding: `${spacing.md} ${spacing.md} ${spacing.sm}`,
-        background: `linear-gradient(90deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
-        borderBottomLeftRadius: borderRadius.lg,
-        borderBottomRightRadius: borderRadius.lg,
-        position: 'sticky',
-        top: 0,
-        zIndex: 9,
-        boxShadow: shadows.md,
+        padding: `0 ${spacing.md} ${spacing.md}`,
       }}>
-        <Flex justify="space-between" align="center" margin={`0 0 ${spacing.md}`}>
-          <Text variant="h2" style={{ color: colors.white, margin: 0, fontWeight: 'bold' }}>WisePantryPal</Text>
-          <div 
-            style={{ 
-              backgroundColor: 'rgba(255, 255, 255, 0.2)', 
-              borderRadius: '50%',
-              width: '36px',
-              height: '36px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backdropFilter: 'blur(4px)',
-              cursor: 'pointer'
-            }}
-            onClick={handleProfileClick}
-          >
-            <User size={24} color={colors.white} />
-          </div>
-        </Flex>
-        
         <div 
+          onClick={() => navigate('/search')}
           style={{ 
             display: 'flex',
-            backgroundColor: colors.white,
-            borderRadius: borderRadius.lg,
-            padding: `${spacing.xs} ${spacing.md}`,
             alignItems: 'center',
-            boxShadow: shadows.sm,
+            padding: `${spacing.sm} ${spacing.md}`,
+            backgroundColor: colors.lightGray,
+            borderRadius: borderRadius.md,
+            marginBottom: spacing.md,
             cursor: 'pointer',
           }}
-          onClick={() => navigate('/search')}
         >
-          <Search size={20} color={colors.primary} style={{ marginRight: spacing.sm }} />
-          <input
-            type="text"
-            placeholder="Search for healthy recipes..."
-            style={{
-              border: 'none',
-              background: 'transparent',
-              fontSize: '15px',
-              width: '100%',
-              outline: 'none',
-              color: colors.textPrimary,
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate('/search');
-            }}
-          />
+          <Search size={20} color={colors.darkGray} />
+          <span style={{ marginLeft: spacing.sm, color: colors.darkGray }}>
+            Search for recipes, ingredients...
+          </span>
         </div>
       </div>
 
@@ -238,25 +199,40 @@ export default function HomeScreen() {
                 View all
               </Button>
             </Flex>
-            <Grid 
-              columns={1} 
-              gap={spacing.md} 
-              margin={`0 0 ${spacing.lg} 0`}
-            >
-              {featuredRecipes.map((recipe) => (
-                <RecipeCard
-                  key={recipe.id}
-                  title={recipe.title}
-                  image={recipe.image}
-                  duration={recipe.duration}
-                  difficulty={recipe.difficulty}
-                  category={recipe.category || 'General'}
-                  rating={recipe.rating || 4.5}
-                  author={recipe.author || 'WisePantryPal'}
-                  onClick={() => handleRecipeClick(recipe.id)}
-                />
-              ))}
-            </Grid>
+            <Container padding={`${spacing.md} ${spacing.md}`}>
+              <Flex justify="space-between" align="center" margin={`0 0 ${spacing.sm}`}>
+                <Text variant="h3">Featured Recipes</Text>
+                <div 
+                  onClick={() => navigate('/featured')}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    cursor: 'pointer',
+                    color: colors.primary
+                  }}
+                >
+                  <Text variant="body2" style={{ color: 'inherit' }}>See All</Text>
+                  <ChevronRight size={16} />
+                </div>
+              </Flex>
+              {/* Test Component for Notifications - Remove in production */}
+              <NotificationTest />
+              <Grid columns={1} gap={spacing.md}>
+                {featuredRecipes.map((recipe) => (
+                  <RecipeCard
+                    key={recipe.id}
+                    title={recipe.title}
+                    image={recipe.image}
+                    duration={recipe.duration}
+                    difficulty={recipe.difficulty}
+                    category={recipe.category || 'General'}
+                    rating={recipe.rating || 4.5}
+                    author={recipe.author || 'WisePantryPal'}
+                    onClick={() => handleRecipeClick(recipe.id)}
+                  />
+                ))}
+              </Grid>
+            </Container>
           </div>
 
           {/* Popular Recipes */}
