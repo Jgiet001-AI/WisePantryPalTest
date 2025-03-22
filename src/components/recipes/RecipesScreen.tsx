@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -12,6 +12,7 @@ import {
   spacing,
   shadows,
   borderRadius,
+  animation,
 } from '../ui/KitchenStoriesDesign';
 import { 
   Home, 
@@ -28,7 +29,9 @@ import {
   Award,
   TrendingUp,
   Leaf,
-  Flame
+  Flame,
+  ScanLine,
+  X
 } from 'lucide-react';
 
 // Sample recipe data with health-focused content
@@ -121,39 +124,109 @@ export default function RecipesScreen() {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [activeDietary, setActiveDietary] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [favoriteRecipes, setFavoriteRecipes] = useState<number[]>([]);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const handleRecipeClick = (id: number) => {
     navigate(`/recipe/${id}`);
   };
 
+  const toggleFavorite = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFavoriteRecipes(prev => 
+      prev.includes(id) 
+        ? prev.filter(recipeId => recipeId !== id)
+        : [...prev, id]
+    );
+  };
+
+  // Filter recipes based on active filters
+  const filteredRecipes = healthyRecipes.filter(recipe => {
+    const matchesCategory = !activeFilter || recipe.category === activeFilter;
+    const matchesDietary = !activeDietary || recipe.healthTags.some(tag => tag.includes(activeDietary));
+    const matchesSearch = !searchTerm || 
+      recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      recipe.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      recipe.healthTags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    return matchesCategory && matchesDietary && matchesSearch;
+  });
+
   return (
-    <div>
+    <Container 
+      style={{ 
+        padding: 0, 
+        maxWidth: '100%', 
+        height: '100%', 
+        display: 'flex', 
+        flexDirection: 'column',
+        overflowY: 'hidden',
+        background: `linear-gradient(135deg, ${colors.primaryLight}, ${colors.secondaryLight})`,
+      }}
+    >
       {/* Header with search */}
       <div style={{ 
         padding: `${spacing.md} ${spacing.md} 0`,
         position: 'sticky',
         top: 0,
         zIndex: 10,
-        backgroundColor: colors.surface,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: isSearchFocused ? 'none' : `1px solid rgba(230, 235, 245, 0.8)`,
+        boxShadow: shadows.sm
       }}>
         <Flex justify="space-between" align="center" margin={`0 0 ${spacing.md}`}>
-          <Text variant="h2" color={colors.textPrimary}>Recipes</Text>
-          <Heart size={24} color={colors.primary} />
+          <Text variant="h2" style={{ color: colors.textPrimary }}>Recipes</Text>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: spacing.sm
+          }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: borderRadius.full,
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              backdropFilter: 'blur(5px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: `all ${animation.fast} ${animation.easing}`,
+              boxShadow: shadows.sm
+            }}>
+              <Heart 
+                size={20} 
+                color={colors.primary} 
+                fill={favoriteRecipes.length > 0 ? colors.primary : 'none'}
+                onClick={() => navigate('/favorites')}
+              />
+            </div>
+          </div>
         </Flex>
-        
-        <div style={{ 
-          display: 'flex',
-          backgroundColor: colors.background,
-          borderRadius: borderRadius.lg,
-          padding: `${spacing.xs} ${spacing.md}`,
-          alignItems: 'center',
-          boxShadow: shadows.sm,
-          marginBottom: spacing.md,
-          border: `1px solid ${colors.divider}`
-        }}>
+
+        {/* Search bar */}
+        <div 
+          className="search-bar"
+          style={{ 
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: borderRadius.md,
+            padding: `${spacing.xs} ${spacing.md}`,
+            marginBottom: spacing.md,
+            boxShadow: shadows.sm,
+            border: '1px solid rgba(230, 235, 245, 0.8)',
+            transition: `all ${animation.fast} ${animation.easing}`
+          }}
+        >
           <Search size={20} color={colors.primary} style={{ marginRight: spacing.sm }} />
           <input
             type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search healthy recipes..."
             style={{
               border: 'none',
@@ -161,53 +234,69 @@ export default function RecipesScreen() {
               fontSize: '15px',
               width: '100%',
               outline: 'none',
-              color: colors.textPrimary,
+              padding: `${spacing.xs} 0`,
+              color: colors.textPrimary
             }}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
           />
-          <Filter size={20} color={colors.primary} />
+          {searchTerm && (
+            <X 
+              size={18} 
+              color={colors.textSecondary} 
+              className="clear-button"
+              style={{ 
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                opacity: 0.7
+              }}
+              onClick={() => setSearchTerm('')}
+              aria-label="Clear search"
+            />
+          )}
         </div>
 
-        {/* Category Pills */}
-        <div style={{ 
+        {/* Category filters with glass effect */}
+        <div style={{
           display: 'flex',
           overflowX: 'auto',
           gap: spacing.sm,
-          paddingBottom: spacing.md,
+          paddingBottom: spacing.sm,
           scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch'
         }}>
-          {categories.map((category) => (
-            <div
+          {categories.map(category => (
+            <div 
               key={category.id}
+              className="category-filter"
               onClick={() => setActiveFilter(activeFilter === category.name ? null : category.name)}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
+                padding: spacing.sm,
                 minWidth: '60px',
+                backgroundColor: activeFilter === category.name 
+                  ? 'rgba(67, 97, 238, 0.15)' 
+                  : 'rgba(255, 255, 255, 0.7)',
+                backdropFilter: 'blur(5px)',
+                borderRadius: borderRadius.lg,
                 cursor: 'pointer',
+                border: `1px solid ${activeFilter === category.name 
+                  ? colors.primary + '30' 
+                  : 'rgba(230, 235, 245, 0.8)'}`,
+                boxShadow: activeFilter === category.name ? shadows.sm : 'none',
+                transition: `all ${animation.fast} ${animation.easing}`
               }}
             >
-              <div style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: borderRadius.circle,
-                backgroundColor: activeFilter === category.name ? colors.primary : colors.surface,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: spacing.xs,
-                boxShadow: activeFilter === category.name ? shadows.md : shadows.sm,
-                border: `1px solid ${activeFilter === category.name ? colors.primary : colors.divider}`,
-                fontSize: '24px',
-                transition: 'all 0.2s ease',
-              }}>
-                {category.icon}
-              </div>
+              <div style={{ fontSize: '24px', marginBottom: '4px' }}>{category.icon}</div>
               <Text 
                 variant="caption" 
-                color={activeFilter === category.name ? colors.primary : colors.textPrimary}
-                align="center"
+                style={{ 
+                  color: activeFilter === category.name ? colors.primary : colors.textSecondary,
+                  fontWeight: activeFilter === category.name ? 600 : 400
+                }}
               >
                 {category.name}
               </Text>
@@ -215,152 +304,260 @@ export default function RecipesScreen() {
           ))}
         </div>
 
-        {/* Dietary Filters */}
-        <div style={{ 
+        {/* Dietary filters with glass effect */}
+        <div style={{
           display: 'flex',
           overflowX: 'auto',
           gap: spacing.sm,
           paddingBottom: spacing.md,
           scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch'
         }}>
-          {dietaryFilters.map((filter) => (
-            <div
+          {dietaryFilters.map(filter => (
+            <div 
               key={filter.id}
+              className="dietary-filter"
               onClick={() => setActiveDietary(activeDietary === filter.name ? null : filter.name)}
               style={{
-                padding: `${spacing.xs} ${spacing.sm}`,
-                backgroundColor: activeDietary === filter.name ? colors.primary : colors.surface,
-                color: activeDietary === filter.name ? colors.white : colors.textPrimary,
-                borderRadius: borderRadius.xl,
                 display: 'flex',
                 alignItems: 'center',
-                gap: spacing.xs,
+                gap: '6px',
+                padding: `${spacing.xs} ${spacing.sm}`,
+                backgroundColor: activeDietary === filter.name 
+                  ? 'rgba(67, 97, 238, 0.15)' 
+                  : 'rgba(255, 255, 255, 0.7)',
+                backdropFilter: 'blur(5px)',
+                borderRadius: borderRadius.full,
                 cursor: 'pointer',
-                boxShadow: activeDietary === filter.name ? shadows.md : shadows.sm,
-                border: `1px solid ${activeDietary === filter.name ? colors.primary : colors.divider}`,
-                transition: 'all 0.2s ease',
+                border: `1px solid ${activeDietary === filter.name 
+                  ? colors.primary + '30' 
+                  : 'rgba(230, 235, 245, 0.8)'}`,
+                boxShadow: activeDietary === filter.name ? shadows.sm : 'none',
+                transition: `all ${animation.fast} ${animation.easing}`
               }}
             >
-              {filter.icon}
-              <span style={{ fontSize: '14px', whiteSpace: 'nowrap' }}>{filter.name}</span>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                {filter.icon}
+              </div>
+              <Text 
+                variant="caption" 
+                style={{ 
+                  color: activeDietary === filter.name ? colors.primary : colors.textSecondary,
+                  fontWeight: activeDietary === filter.name ? 600 : 400
+                }}
+              >
+                {filter.name}
+              </Text>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Main Content */}
-      <Container padding={`0 ${spacing.md} ${spacing.xxl}`} background={colors.background}>
-        {/* Featured Recipe */}
-        <div style={{ marginBottom: spacing.xl }}>
-          <Flex justify="space-between" align="center" margin={`${spacing.md} 0`}>
-            <Flex align="center" gap={spacing.xs}>
-              <Star size={18} color={colors.accent1} />
-              <Text variant="h3" color={colors.textPrimary}>Featured Recipe</Text>
-            </Flex>
-          </Flex>
-          
-          <Card 
-            padding="0" 
-            margin={`0 0 ${spacing.lg}`}
-            borderRadiusSize={borderRadius.lg}
-            shadow={shadows.lg}
-            onClick={() => handleRecipeClick(healthyRecipes[2].id)}
-          >
-            <div style={{ position: 'relative', width: '100%', height: '200px' }}>
-              <img 
-                src={healthyRecipes[2].image} 
-                alt={healthyRecipes[2].title}
-                style={{ 
-                  width: '100%', 
-                  height: '100%', 
-                  objectFit: 'cover',
-                  borderTopLeftRadius: borderRadius.lg,
-                  borderTopRightRadius: borderRadius.lg
-                }}
-              />
-              <div style={{
-                position: 'absolute',
-                top: spacing.sm,
-                left: spacing.sm,
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                color: colors.white,
-                padding: `${spacing.xs} ${spacing.sm}`,
-                borderRadius: borderRadius.xl,
-                fontSize: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: spacing.xs
-              }}>
-                <Clock size={14} />
-                {healthyRecipes[2].duration}
-              </div>
-              <Badge
-                color={colors.white}
-                background={colors.primary}
+      {/* Recipe grid with glass effect cards */}
+      <div style={{
+        flex: 1,
+        overflowY: 'auto',
+        padding: spacing.md,
+        paddingTop: 0
+      }}>
+        {filteredRecipes.length === 0 ? (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '200px',
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            backdropFilter: 'blur(5px)',
+            borderRadius: borderRadius.lg,
+            padding: spacing.lg,
+            textAlign: 'center',
+            margin: `${spacing.lg} 0`,
+            border: `1px solid rgba(230, 235, 245, 0.8)`,
+          }}>
+            <Text variant="body1" style={{ color: colors.textSecondary, marginBottom: spacing.sm }}>
+              No recipes found matching your criteria
+            </Text>
+            <Text variant="caption" style={{ color: colors.textSecondary }}>
+              Try adjusting your filters or search term
+            </Text>
+          </div>
+        ) : (
+          <Grid columns={1} gap={spacing.md}>
+            {filteredRecipes.map(recipe => (
+              <div 
+                key={recipe.id} 
+                className="recipe-card"
+                onClick={() => navigate(`/recipes/${recipe.id}`)}
                 style={{
-                  position: 'absolute',
-                  top: spacing.sm,
-                  right: spacing.sm,
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: borderRadius.lg,
+                  overflow: 'hidden',
+                  boxShadow: shadows.sm,
+                  transition: `all ${animation.medium}`,
+                  cursor: 'pointer',
+                  transform: 'translateY(0)',
+                  border: '1px solid rgba(230, 235, 245, 0.8)',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column'
                 }}
               >
-                Trending
-              </Badge>
-            </div>
-            <div style={{ padding: spacing.md }}>
-              <Text variant="h3" color={colors.textPrimary} margin={`0 0 ${spacing.xs}`}>
-                {healthyRecipes[2].title}
-              </Text>
-              <Flex justify="space-between" align="center" margin={`0 0 ${spacing.xs}`}>
-                <Text variant="body2" color={colors.textSecondary}>
-                  by {healthyRecipes[2].author}
-                </Text>
-                <Flex align="center" gap="4px">
-                  <Star size={16} color={colors.accent1} fill={colors.accent1} />
-                  <Text variant="body2" color={colors.textSecondary}>
-                    {healthyRecipes[2].rating}
-                  </Text>
-                </Flex>
-              </Flex>
-              <Flex gap={spacing.xs} wrap="wrap" margin={`${spacing.sm} 0 0`}>
-                {healthyRecipes[2].healthTags.map((tag, index) => (
-                  <Badge
-                    key={index}
-                    color={colors.white}
-                    background={`${colors.secondary}CC`}
+                <div style={{ position: 'relative' }}>
+                  <img 
+                    src={recipe.image} 
+                    alt={recipe.title}
+                    style={{
+                      width: '100%',
+                      height: '180px',
+                      objectFit: 'cover'
+                    }}
+                  />
+                  <div 
+                    style={{
+                      position: 'absolute',
+                      top: spacing.sm,
+                      right: spacing.sm,
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: borderRadius.full,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      backdropFilter: 'blur(5px)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 1
+                    }}
+                    onClick={(e) => toggleFavorite(recipe.id, e)}
                   >
-                    {tag}
-                  </Badge>
-                ))}
-              </Flex>
-            </div>
-          </Card>
-        </div>
-
-        {/* Recipe Grid */}
-        <div>
-          <Flex justify="space-between" align="center" margin={`${spacing.md} 0`}>
-            <Flex align="center" gap={spacing.xs}>
-              <Leaf size={18} color={colors.primary} />
-              <Text variant="h3" color={colors.textPrimary}>Healthy Recipes</Text>
-            </Flex>
-            <Flex align="center" gap={spacing.xs} style={{ cursor: 'pointer' }}>
-              <Text variant="body2" color={colors.textSecondary}>Sort</Text>
-              <Filter size={16} color={colors.primary} />
-            </Flex>
-          </Flex>
-          
-          <Grid columns={2} gap={spacing.md}>
-            {healthyRecipes.filter(recipe => recipe.id !== 3).map((recipe) => (
-              <RecipeCard 
-                key={recipe.id} 
-                {...recipe} 
-                onClick={() => handleRecipeClick(recipe.id)}
-              />
+                    <Heart 
+                      size={20} 
+                      color={colors.primary} 
+                      fill={favoriteRecipes.includes(recipe.id) ? colors.primary : 'none'}
+                    />
+                  </div>
+                  <div 
+                    style={{
+                      position: 'absolute',
+                      bottom: spacing.sm,
+                      left: spacing.sm,
+                      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                      backdropFilter: 'blur(5px)',
+                      borderRadius: borderRadius.md,
+                      padding: `${spacing.xs} ${spacing.sm}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    <Clock size={14} color={colors.white} />
+                    <Text variant="caption" style={{ color: colors.white }}>
+                      {recipe.duration}
+                    </Text>
+                  </div>
+                  <div 
+                    style={{
+                      position: 'absolute',
+                      bottom: spacing.sm,
+                      right: spacing.sm,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      backdropFilter: 'blur(5px)',
+                      borderRadius: borderRadius.md,
+                      padding: `${spacing.xs} ${spacing.sm}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    <Star size={14} color={colors.warning} fill={colors.warning} />
+                    <Text variant="caption" style={{ color: colors.textPrimary, fontWeight: 600 }}>
+                      {recipe.rating}
+                    </Text>
+                  </div>
+                </div>
+                <div style={{ padding: spacing.md }}>
+                  <Text variant="h3" style={{ marginBottom: spacing.xs }}>{recipe.title}</Text>
+                  <Text variant="caption" style={{ color: colors.textSecondary, marginBottom: spacing.sm }}>
+                    by {recipe.author}
+                  </Text>
+                  <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '6px',
+                    marginTop: spacing.xs
+                  }}>
+                    {recipe.healthTags.map((tag, index) => (
+                      <div 
+                        key={index}
+                        style={{
+                          backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                          borderRadius: borderRadius.sm,
+                          padding: `2px ${spacing.xs}`,
+                          fontSize: '12px',
+                          color: colors.primary,
+                          fontWeight: 500
+                        }}
+                      >
+                        {tag}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             ))}
           </Grid>
-        </div>
-      </Container>
-    </div>
+        )}
+      </div>
+      <style>
+        {`
+          .recipe-card {
+            transition: all 0.3s ease;
+          }
+          
+          .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+          }
+          
+          .category-filter {
+            transition: all 0.2s ease;
+            cursor: pointer;
+          }
+          
+          .category-filter:hover {
+            transform: scale(1.05);
+          }
+          
+          .dietary-filter {
+            transition: all 0.2s ease;
+            cursor: pointer;
+          }
+          
+          .dietary-filter:hover {
+            transform: scale(1.05);
+          }
+          
+          .search-bar:focus-within {
+            box-shadow: 0 0 0 2px ${colors.primary}40;
+          }
+          .clear-button {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0.7;
+          }
+          .clear-button:hover {
+            opacity: 1;
+            transform: scale(1.1);
+          }
+        `}
+      </style>
+    </Container>
   );
 }

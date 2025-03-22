@@ -25,7 +25,8 @@ import ScanScreen from "./components/scanning/ScanScreen";
 import Dashboard from "./components/dashboard/Dashboard";
 import Success from "./components/auth/Success";
 import TinderStyle from "./components/tinder/TinderStyle";
-import ShoppingList from "./components/shopping/ShoppingList";
+import ShoppingScreen from "./components/shopping/ShoppingScreen";
+import ShoppingListAutomation from "./components/shopping/ShoppingListAutomation";
 import PantryInventory from "./components/pantry/PantryInventory";
 import ProfileScreen from "./components/profile/ProfileScreen";
 
@@ -156,7 +157,8 @@ const AppContent: React.FC = () => {
         <Route path="/recipes" element={<ProtectedRoute element={<RecipesScreen />} />} />
         <Route path="/recipes/:id" element={<ProtectedRoute element={<RecipeDetail />} />} />
         <Route path="/scan" element={<ProtectedRoute element={<ScanScreen />} />} />
-        <Route path="/shopping-list" element={<ProtectedRoute element={<ShoppingList />} />} />
+        <Route path="/shopping-list" element={<ProtectedRoute element={<ShoppingScreen />} />} />
+        <Route path="/shopping-list-automation" element={<ProtectedRoute element={<ShoppingListAutomation />} />} />
         <Route path="/pantry" element={<ProtectedRoute element={<PantryInventory />} />} />
         <Route path="/profile" element={<ProtectedRoute element={<ProfileScreen />} />} />
         <Route path="/tinder" element={<ProtectedRoute element={<TinderStyle />} />} />

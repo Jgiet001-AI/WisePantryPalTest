@@ -59,6 +59,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('userName', 'Demo User');
         localStorage.setItem('userEmail', 'demo@example.com');
         localStorage.setItem('authProvider', 'demo');
+        
+        // Don't auto-complete onboarding for testing purposes
+        if (!localStorage.getItem('onboardingCompleted')) {
+          setIsOnboardingCompleted(false);
+        }
       }
       
       if (onboarding === 'true') {
@@ -240,10 +245,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
-  // Complete onboarding
+  /**
+   * Mark onboarding as completed
+   */
   const completeOnboarding = () => {
-    localStorage.setItem('onboardingCompleted', 'true');
     setIsOnboardingCompleted(true);
+    localStorage.setItem('onboardingCompleted', 'true');
   };
 
   return (

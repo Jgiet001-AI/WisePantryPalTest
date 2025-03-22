@@ -9,25 +9,31 @@ import {
 
 // Modern colors inspired by Price Comparison screen with improved contrast
 export const colors = {
-  primary: '#4f46e5', // Indigo
+  primary: '#4361ee', // Enhanced Indigo
   primaryLight: '#eef2ff',
   primaryDark: '#3730a3',
-  secondary: '#9333ea', // Purple
+  primaryGradient: 'linear-gradient(135deg, #4361ee, #3a0ca3)',
+  
+  secondary: '#7209b7', // Enhanced Purple
   secondaryLight: '#f5f3ff',
-  secondaryDark: '#7e22ce',
+  secondaryDark: '#5b0e91',
+  secondaryGradient: 'linear-gradient(135deg, #7209b7, #560bad)',
   
   // Accent colors
-  accent1: '#ec4899', // Pink
+  accent1: '#f72585', // Enhanced Pink
   accent2: '#06b6d4', // Teal
-  accent3: '#f97316', // Orange
+  accent3: '#fb8500', // Enhanced Orange
   
   // Status colors
   success: '#10b981',
   successLight: '#dcfce7',
+  successDark: '#059669',
   error: '#ef4444',
   errorLight: '#fee2e2',
+  errorDark: '#dc2626',
   warning: '#f59e0b',
   warningLight: '#fef9c3',
+  warningDark: '#d97706',
   
   // Neutral colors
   white: '#ffffff',
@@ -77,47 +83,50 @@ export const colorUsage = {
   infoIcon: colors.accent2,
 };
 
-// Typography styles with more modern proportions
+// Typography settings with improved hierarchy and modern fonts
 export const typography = {
+  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   h1: {
     fontSize: '28px',
     fontWeight: 700,
-    lineHeight: '36px',
-    letterSpacing: '-0.5px',
+    lineHeight: 1.2,
+    letterSpacing: '-0.01em',
   },
   h2: {
     fontSize: '24px',
-    fontWeight: 700,
-    lineHeight: '32px',
-    letterSpacing: '-0.3px',
+    fontWeight: 600,
+    lineHeight: 1.3,
+    letterSpacing: '-0.01em',
   },
   h3: {
     fontSize: '20px',
     fontWeight: 600,
-    lineHeight: '28px',
-    letterSpacing: '-0.2px',
+    lineHeight: 1.4,
+    letterSpacing: '-0.01em',
   },
   body1: {
     fontSize: '16px',
     fontWeight: 400,
-    lineHeight: '24px',
+    lineHeight: 1.5,
+    letterSpacing: '0',
   },
   body2: {
     fontSize: '14px',
     fontWeight: 400,
-    lineHeight: '20px',
+    lineHeight: 1.5,
+    letterSpacing: '0',
   },
   caption: {
     fontSize: '12px',
     fontWeight: 400,
-    lineHeight: '16px',
-    letterSpacing: '0.2px',
+    lineHeight: 1.5,
+    letterSpacing: '0.01em',
   },
   button: {
-    fontSize: '15px',
-    fontWeight: 600,
-    textTransform: 'none',
-    letterSpacing: '0.2px',
+    fontSize: '14px',
+    fontWeight: 500,
+    lineHeight: 1.5,
+    letterSpacing: '0.01em',
   },
 };
 
@@ -131,27 +140,28 @@ export const spacing = {
   xxl: '48px',
 };
 
-// Border radius - more rounded corners for a friendlier look
-export const borderRadius = {
-  xs: '4px',
-  sm: '8px',
-  md: '12px',
-  lg: '16px',
-  xl: '24px',
-  xxl: '32px',
-  circle: '50%',
+// Shadows with more depth and subtlety
+export const shadows = {
+  none: 'none',
+  sm: '0 1px 2px rgba(0, 0, 0, 0.05)',
+  md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+  xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+  card: '0 4px 12px rgba(0, 0, 0, 0.08)',
+  cardHover: '0 8px 16px rgba(0, 0, 0, 0.12)',
+  button: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  active: '0 1px 2px rgba(0, 0, 0, 0.05)',
+  focus: '0 0 0 3px rgba(79, 70, 229, 0.45)',
 };
 
-// Enhanced shadows with softer edges and better depth perception
-export const shadows = {
-  sm: '0 2px 8px rgba(0, 0, 0, 0.05)',
-  md: '0 4px 12px rgba(0, 0, 0, 0.08)',
-  lg: '0 8px 20px rgba(0, 0, 0, 0.1)',
-  xl: '0 12px 28px rgba(0, 0, 0, 0.12)',
-  card: '0 2px 10px rgba(0, 0, 0, 0.06)',
-  button: '0 4px 6px rgba(0, 0, 0, 0.08)',
-  hover: '0 6px 14px rgba(0, 0, 0, 0.1)',
-  active: '0 2px 4px rgba(0, 0, 0, 0.1)',
+// Border radius settings
+export const borderRadius = {
+  none: '0',
+  sm: '4px',
+  md: '8px',
+  lg: '16px',
+  xl: '24px',
+  full: '9999px',
 };
 
 // Animation durations
@@ -165,22 +175,19 @@ export const animation = {
 // Common components
 export const Container: React.FC<ContainerProps> = ({ 
   children, 
+  padding = spacing.md,
+  margin = '0',
+  background = colors.surface,
   style = {} 
 }) => {
   return (
     <div 
       style={{ 
-        padding: spacing.md, 
-        width: '100%', 
-        maxWidth: '373px', 
-        margin: '0 auto', 
-        background: colors.background,
-        height: '100%',
-        boxSizing: 'border-box',
-        transition: `all ${animation.medium} ${animation.easing}`,
-        ...style
-      }}
-    >
+        padding, 
+        margin,
+        background,
+        ...style 
+      }}>
       {children}
     </div>
   );
@@ -209,7 +216,7 @@ export const Card: React.FC<CardProps> = ({
         margin,
         background,
         borderRadius: borderRadiusSize,
-        boxShadow: isHovered && onClick ? shadows.hover : shadow,
+        boxShadow: isHovered && onClick ? shadows.cardHover : shadow,
         transition: `all ${animation.medium} ${animation.easing}`,
         cursor: onClick ? 'pointer' : 'default',
         transform: isHovered && onClick ? 'translateY(-2px)' : 'translateY(0)',
@@ -263,7 +270,7 @@ export const Button: React.FC<ButtonProps> = ({
   // Variant configurations with improved focus and active states
   const variantStyles = {
     primary: {
-      background: disabled ? `${colors.primary}80` : colors.primary,
+      background: disabled ? `${colors.primary}80` : colors.primaryGradient,
       color: colors.onPrimary,
       border: 'none',
       boxShadow: disabled ? 'none' : isPressed ? shadows.active : shadows.button,
@@ -454,6 +461,8 @@ export const Flex: React.FC<FlexProps> = ({
   align = 'center',
   gap = '0',
   wrap = 'nowrap',
+  margin = '0',
+  padding = '0',
   style = {}
 }) => {
   return (
@@ -465,6 +474,8 @@ export const Flex: React.FC<FlexProps> = ({
         alignItems: align,
         gap,
         flexWrap: wrap,
+        margin,
+        padding,
         ...style
       }}
     >
@@ -585,7 +596,7 @@ export const Avatar: React.FC<{
       style={{
         width: sizeValue,
         height: sizeValue,
-        borderRadius: borderRadius.circle,
+        borderRadius: borderRadius.full,
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
@@ -638,7 +649,7 @@ export const MobileContainer: React.FC<{
         height: '852px', // iPhone 16 Pro height - exact dimension
         margin: '0 auto',
         border: '10px solid #000',
-        borderRadius: '44px', // iPhone 16 Pro corner radius
+        borderRadius: borderRadius.xl, // iPhone 16 Pro corner radius
         overflow: 'hidden',
         position: 'relative',
         backgroundColor: colors.background,
@@ -1021,6 +1032,337 @@ export const TabsContent: React.FC<{
   return (
     <div
       style={{
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// CardHeader component
+export const CardHeader: React.FC<{
+  children: ReactNode;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  style = {},
+}) => {
+  return (
+    <div
+      style={{
+        padding: `${spacing.md} ${spacing.md} 0 ${spacing.md}`,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// CardTitle component
+export const CardTitle: React.FC<{
+  children: ReactNode;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  style = {},
+}) => {
+  return (
+    <Text 
+      variant="h3" 
+      color={colors.textPrimary}
+      style={{
+        marginBottom: spacing.xs,
+        ...style,
+      }}
+    >
+      {children}
+    </Text>
+  );
+};
+
+// Checkbox component
+export const Checkbox: React.FC<{
+  checked?: boolean;
+  onChange?: () => void;
+  style?: React.CSSProperties;
+}> = ({
+  checked = false,
+  onChange,
+  style = {},
+}) => {
+  return (
+    <div
+      onClick={onChange}
+      style={{
+        width: '20px',
+        height: '20px',
+        borderRadius: borderRadius.sm,
+        background: checked ? colors.primary : colors.white,
+        border: `1px solid ${checked ? colors.primary : colors.border}`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        transition: `all ${animation.fast} ${animation.easing}`,
+        ...style,
+      }}
+    >
+      {checked && (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 6L9 17L4 12" stroke={colors.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )}
+    </div>
+  );
+};
+
+// Dialog components
+export const Dialog: React.FC<{
+  children: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}> = ({
+  children,
+  open = false,
+  onOpenChange,
+}) => {
+  if (!open) return null;
+  
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onOpenChange?.(false);
+        }
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const DialogContent: React.FC<{
+  children: ReactNode;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  style = {},
+}) => {
+  return (
+    <div
+      style={{
+        background: colors.white,
+        borderRadius: borderRadius.lg,
+        boxShadow: shadows.lg,
+        width: '90%',
+        maxWidth: '500px',
+        maxHeight: '90vh',
+        overflow: 'auto',
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const DialogHeader: React.FC<{
+  children: ReactNode;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  style = {},
+}) => {
+  return (
+    <div
+      style={{
+        padding: spacing.md,
+        borderBottom: `1px solid ${colors.border}`,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const DialogTitle: React.FC<{
+  children: ReactNode;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  style = {},
+}) => {
+  return (
+    <Text 
+      variant="h3" 
+      color={colors.textPrimary}
+      style={{
+        ...style,
+      }}
+    >
+      {children}
+    </Text>
+  );
+};
+
+// Select components
+export const Select: React.FC<{
+  children: ReactNode;
+  value?: string;
+  onChange?: (value: string) => void;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  value,
+  onChange,
+  style = {},
+}) => {
+  const [open, setOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(value);
+  
+  return (
+    <div
+      style={{
+        position: 'relative',
+        ...style,
+      }}
+    >
+      {React.Children.map(children, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child as React.ReactElement<any>, {
+            value: selectedValue,
+            onChange: (newValue: string) => {
+              setSelectedValue(newValue);
+              onChange?.(newValue);
+              setOpen(false);
+            },
+            open,
+            setOpen,
+          });
+        }
+        return child;
+      })}
+    </div>
+  );
+};
+
+export const SelectTrigger: React.FC<{
+  children: ReactNode;
+  value?: string;
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  open,
+  setOpen,
+  style = {},
+}) => {
+  return (
+    <div
+      onClick={() => setOpen?.(!open)}
+      style={{
+        padding: `${spacing.sm} ${spacing.md}`,
+        background: colors.white,
+        border: `1px solid ${colors.border}`,
+        borderRadius: borderRadius.md,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        cursor: 'pointer',
+        ...style,
+      }}
+    >
+      {children}
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d={open ? "M18 15L12 9L6 15" : "M6 9L12 15L18 9"} stroke={colors.textSecondary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    </div>
+  );
+};
+
+export const SelectContent: React.FC<{
+  children: ReactNode;
+  open?: boolean;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  open,
+  style = {},
+}) => {
+  if (!open) return null;
+  
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: '100%',
+        left: 0,
+        right: 0,
+        marginTop: spacing.xs,
+        background: colors.white,
+        border: `1px solid ${colors.border}`,
+        borderRadius: borderRadius.md,
+        boxShadow: shadows.md,
+        zIndex: 10,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const SelectValue: React.FC<{
+  placeholder?: string;
+  value?: string;
+}> = ({
+  placeholder,
+  value,
+}) => {
+  return (
+    <div>
+      {value || placeholder}
+    </div>
+  );
+};
+
+export const SelectItem: React.FC<{
+  children: ReactNode;
+  value: string;
+  onChange?: (value: string) => void;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  value,
+  onChange,
+  style = {},
+}) => {
+  return (
+    <div
+      onClick={() => onChange?.(value)}
+      style={{
+        padding: `${spacing.sm} ${spacing.md}`,
+        cursor: 'pointer',
+        transition: `background ${animation.fast} ${animation.easing}`,
+        '&:hover': {
+          background: colors.backgroundLight,
+        },
         ...style,
       }}
     >

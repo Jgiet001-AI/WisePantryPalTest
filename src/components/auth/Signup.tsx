@@ -115,7 +115,8 @@ export default function Signup() {
     const success = await signup(formData.name, formData.email, formData.password);
     
     if (success) {
-      navigate('/');
+      // Redirect to onboarding flow for new users
+      navigate('/onboarding/1');
     }
   };
 
@@ -123,7 +124,8 @@ export default function Signup() {
     const success = await socialLogin(provider);
     
     if (success) {
-      navigate('/');
+      // Redirect to onboarding flow for new users
+      navigate('/onboarding/1');
     }
   };
 

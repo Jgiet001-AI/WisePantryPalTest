@@ -1,0 +1,48 @@
+/* Custom styles for Shopping components */
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Glass effect styling for shopping cards */
+.shopping-card {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(230, 235, 245, 0.8);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.shopping-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Progress bar animation */
+.progress-bar {
+  transition: width 0.3s ease;
+}
+
+/* Checkbox styling */
+.checkbox-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Category icons hover effect */
+.category-icon {
+  transition: all 0.2s ease;
+}
+
+.category-icon:hover {
+  transform: scale(1.1);
+}

@@ -42,6 +42,9 @@ export interface CardProps {
 // Container component types
 export interface ContainerProps {
   children: ReactNode;
+  padding?: string;
+  margin?: string;
+  background?: string;
   style?: CSSProperties;
 }
 
@@ -49,9 +52,11 @@ export interface ContainerProps {
 export interface FlexProps {
   children: ReactNode;
   direction?: 'row' | 'column';
-  align?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline';
   justify?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'space-evenly';
-  gap?: string | number;
+  align?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline';
+  gap?: string;
   wrap?: 'nowrap' | 'wrap' | 'wrap-reverse';
+  margin?: string;
+  padding?: string;
   style?: CSSProperties;
 }

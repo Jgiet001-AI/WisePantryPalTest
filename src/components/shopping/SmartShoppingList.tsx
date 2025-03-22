@@ -2,22 +2,44 @@ import { useState } from "react";
 import { 
   ShoppingCart, Check, X, Plus, Search, Filter, 
   MoreHorizontal, ChevronDown, ChevronUp, Trash2, 
-  Edit, Clock, BarChart, ExternalLink 
+  Edit, Clock, BarChart, ExternalLink, Home, Book,
+  User, ScanLine
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Container,
+  Text,
+  Flex,
+  Divider,
+  colors,
+  spacing,
+  shadows,
+  borderRadius,
+  Button,
+  animation,
+  BottomNavigation,
+  Badge,
+  Input,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Checkbox,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select";
+} from '../ui/KitchenStoriesDesign';
+import { useNavigate } from "react-router-dom";
 
 // Mock shopping list items
 const mockShoppingItems = [
@@ -64,6 +86,7 @@ export default function SmartShoppingList() {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('current');
   const [expandedCategory, setExpandedCategory] = useState<string | null>('all');
+  const navigate = useNavigate();
   
   // Toggle item checked state
   const toggleItemChecked = (id: number) => {
@@ -106,227 +129,152 @@ export default function SmartShoppingList() {
   };
   
   return (
-    <div className="container p-4 max-w-md mx-auto">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-emerald-800 flex items-center gap-2">
-          <ShoppingCart className="h-5 w-5" />
-          Smart Shopping List
-        </h2>
-        <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
-          {items.filter(item => !item.checked).length} Items
-        </Badge>
-      </div>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-emerald-50 rounded-lg p-1">
-          <TabsTrigger value="current">Current List</TabsTrigger>
-          <TabsTrigger value="frequent">Frequent Items</TabsTrigger>
-          <TabsTrigger value="stores">Stores</TabsTrigger>
-        </TabsList>
+    <Container>
+      <Flex direction="column" padding={spacing.md} style={{ paddingBottom: '90px' }}>
+        <Flex justify="between" align="center" marginBottom={spacing.md}>
+          <Text variant="h2" color={colors.primary} style={{ display: 'flex', alignItems: 'center', gap: spacing.xs }}>
+            <ShoppingCart size={20} />
+            Smart Shopping List
+          </Text>
+          <Badge color="primary">
+            {items.filter(item => !item.checked).length} Items
+          </Badge>
+        </Flex>
         
-        <TabsContent value="current" className="mt-4 space-y-4">
-          <div className="flex gap-2">
-            <div className="flex-1 relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+        <Tabs value={activeTab} onChange={setActiveTab} style={{ width: '100%' }}>
+          <TabsList style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', width: '100%', background: colors.backgroundLight, borderRadius: borderRadius.md, padding: spacing.xs }}>
+            <TabsTrigger value="current">Current List</TabsTrigger>
+            <TabsTrigger value="frequent">Frequent Items</TabsTrigger>
+            <TabsTrigger value="stores">Stores</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="current" style={{ marginTop: spacing.md }}>
+            <Flex gap={spacing.xs}>
               <Input 
                 placeholder="Search items..." 
-                className="pl-8 border-emerald-200" 
+                style={{ flex: 1, padding: spacing.xs, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
-            <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger className="w-[120px] border-emerald-200">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {categories.map((category, index) => (
-                  <SelectItem key={index} value={category.name.toLowerCase()}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-3">
-            {expandedCategory === 'all' ? (
-              Object.keys(itemsByCategory).map((category) => (
-                <Card 
-                  key={category}
-                  className="bg-white/80 backdrop-blur-sm border border-emerald-100 shadow-sm overflow-hidden"
-                >
-                  <div 
-                    className="px-3 py-2 border-b border-gray-100 flex justify-between items-center cursor-pointer hover:bg-gray-50"
-                    onClick={() => toggleCategory(category)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
-                      <h3 className="font-medium text-gray-900">{category}</h3>
-                      <span className="text-xs text-gray-500">
-                        {itemsByCategory[category].filter(item => !item.checked).length} items
-                      </span>
-                    </div>
-                    <ChevronDown className="h-4 w-4 text-gray-400" />
-                  </div>
-                  
-                  <div className="divide-y divide-gray-100">
-                    {itemsByCategory[category].map((item) => (
-                      <div 
-                        key={item.id}
-                        className={`px-3 py-2 flex items-center gap-3 ${item.checked ? 'bg-gray-50' : ''}`}
-                      >
-                        <Checkbox 
-                          checked={item.checked} 
-                          onCheckedChange={() => toggleItemChecked(item.id)}
-                          className="border-emerald-300 data-[state=checked]:bg-emerald-500"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-center">
-                            <p className={`font-medium ${item.checked ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
-                              {item.name}
-                            </p>
-                            <Badge 
-                              variant="outline" 
-                              className="text-xs border-emerald-200"
-                            >
-                              {item.quantity}
-                            </Badge>
-                          </div>
-                          {item.note && (
-                            <p className="text-xs text-gray-500 truncate">
-                              {item.note}
-                            </p>
-                          )}
-                        </div>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="h-6 w-6 p-0"
-                          onClick={() => {
-                            setEditingItem(item);
-                            setShowAddForm(true);
-                          }}
-                        >
-                          <MoreHorizontal className="h-4 w-4 text-gray-400" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              ))
-            ) : (
-              <Card 
-                className="bg-white/80 backdrop-blur-sm border border-emerald-100 shadow-sm overflow-hidden"
-              >
-                <div 
-                  className="px-3 py-2 border-b border-gray-100 flex justify-between items-center cursor-pointer hover:bg-gray-50"
-                  onClick={() => setExpandedCategory('all')}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
-                    <h3 className="font-medium text-gray-900">{expandedCategory}</h3>
-                    <span className="text-xs text-gray-500">
-                      {expandedCategory && itemsByCategory[expandedCategory]?.filter(item => !item.checked).length || 0} items
-                    </span>
-                  </div>
-                  <ChevronUp className="h-4 w-4 text-gray-400" />
-                </div>
-                
-                <div className="divide-y divide-gray-100">
-                  {expandedCategory && itemsByCategory[expandedCategory]?.map((item) => (
-                    <div 
-                      key={item.id}
-                      className={`px-3 py-2 flex items-center gap-3 ${item.checked ? 'bg-gray-50' : ''}`}
-                    >
-                      <Checkbox 
-                        checked={item.checked} 
-                        onCheckedChange={() => toggleItemChecked(item.id)}
-                        className="border-emerald-300 data-[state=checked]:bg-emerald-500"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-center">
-                          <p className={`font-medium ${item.checked ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
-                            {item.name}
-                          </p>
-                          <Badge 
-                            variant="outline" 
-                            className="text-xs border-emerald-200"
-                          >
-                            {item.quantity}
-                          </Badge>
-                        </div>
-                        {item.note && (
-                          <p className="text-xs text-gray-500 truncate">
-                            {item.note}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="h-6 w-6 p-0"
-                          onClick={() => {
-                            setEditingItem(item);
-                            setShowAddForm(true);
-                          }}
-                        >
-                          <Edit className="h-3.5 w-3.5 text-gray-400" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="h-6 w-6 p-0 text-gray-400 hover:text-rose-500"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </div>
+              <Select value={filterCategory} onChange={setFilterCategory} style={{ width: '120px' }}>
+                <SelectTrigger style={{ padding: spacing.xs, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}>
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  {categories.map((category, index) => (
+                    <SelectItem key={index} value={category.name.toLowerCase()}>
+                      {category.name}
+                    </SelectItem>
                   ))}
-                </div>
-              </Card>
-            )}
-          </div>
-          
-          <div className="flex gap-2">
-            <Button
-              className="flex-1 bg-emerald-500 hover:bg-emerald-600"
-              onClick={() => {
+                </SelectContent>
+              </Select>
+            </Flex>
+            
+            <Flex direction="column" gap={spacing.md} style={{ marginTop: spacing.md }}>
+              {expandedCategory === 'all' ? (
+                Object.keys(itemsByCategory).map((category) => (
+                  <Card key={category} style={{ padding: spacing.md, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}>
+                    <Flex justify="between" align="center" style={{ marginBottom: spacing.xs, cursor: 'pointer' }} onClick={() => toggleCategory(category)}>
+                      <Flex align="center" gap={spacing.xs}>
+                        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: colors.primary }} />
+                        <Text variant="h3" color={colors.primary}>{category}</Text>
+                        <Text variant="body2" color={colors.textSecondary}>{itemsByCategory[category].filter(item => !item.checked).length} items</Text>
+                      </Flex>
+                      <ChevronDown size={20} />
+                    </Flex>
+                    
+                    <Flex direction="column" gap={spacing.xs}>
+                      {itemsByCategory[category].map((item) => (
+                        <Flex key={item.id} align="center" gap={spacing.xs} style={{ padding: spacing.xs, borderRadius: borderRadius.md, background: item.checked ? colors.backgroundLight : 'transparent' }}>
+                          <Checkbox checked={item.checked} onChange={() => toggleItemChecked(item.id)} style={{ border: `1px solid ${colors.border}` }} />
+                          <Flex direction="column" style={{ flex: 1 }}>
+                            <Text variant="body1" color={item.checked ? colors.textSecondary : colors.textPrimary} style={{ textDecoration: item.checked ? 'line-through' : 'none' }}>{item.name}</Text>
+                            <Text variant="body2" color={colors.textSecondary}>{item.quantity}</Text>
+                            {item.note && <Text variant="body2" color={colors.textSecondary}>{item.note}</Text>}
+                          </Flex>
+                          <Button variant="ghost" size="sm" style={{ padding: spacing.xs, borderRadius: borderRadius.md }} onClick={() => {
+                            setEditingItem(item);
+                            setShowAddForm(true);
+                          }}>
+                            <MoreHorizontal size={20} />
+                          </Button>
+                        </Flex>
+                      ))}
+                    </Flex>
+                  </Card>
+                ))
+              ) : (
+                <Card style={{ padding: spacing.md, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}>
+                  <Flex justify="between" align="center" style={{ marginBottom: spacing.xs, cursor: 'pointer' }} onClick={() => setExpandedCategory('all')}>
+                    <Flex align="center" gap={spacing.xs}>
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: colors.primary }} />
+                      <Text variant="h3" color={colors.primary}>{expandedCategory}</Text>
+                      <Text variant="body2" color={colors.textSecondary}>{expandedCategory && itemsByCategory[expandedCategory]?.filter(item => !item.checked).length || 0} items</Text>
+                    </Flex>
+                    <ChevronUp size={20} />
+                  </Flex>
+                  
+                  <Flex direction="column" gap={spacing.xs}>
+                    {expandedCategory && itemsByCategory[expandedCategory]?.map((item) => (
+                      <Flex key={item.id} align="center" gap={spacing.xs} style={{ padding: spacing.xs, borderRadius: borderRadius.md, background: item.checked ? colors.backgroundLight : 'transparent' }}>
+                        <Checkbox checked={item.checked} onChange={() => toggleItemChecked(item.id)} style={{ border: `1px solid ${colors.border}` }} />
+                        <Flex direction="column" style={{ flex: 1 }}>
+                          <Text variant="body1" color={item.checked ? colors.textSecondary : colors.textPrimary} style={{ textDecoration: item.checked ? 'line-through' : 'none' }}>{item.name}</Text>
+                          <Text variant="body2" color={colors.textSecondary}>{item.quantity}</Text>
+                          {item.note && <Text variant="body2" color={colors.textSecondary}>{item.note}</Text>}
+                        </Flex>
+                        <Flex gap={spacing.xs}>
+                          <Button variant="ghost" size="sm" style={{ padding: spacing.xs, borderRadius: borderRadius.md }} onClick={() => {
+                            setEditingItem(item);
+                            setShowAddForm(true);
+                          }}>
+                            <Edit size={20} />
+                          </Button>
+                          <Button variant="ghost" size="sm" style={{ padding: spacing.xs, borderRadius: borderRadius.md, color: colors.danger }}>
+                            <Trash2 size={20} />
+                          </Button>
+                        </Flex>
+                      </Flex>
+                    ))}
+                  </Flex>
+                </Card>
+              )}
+            </Flex>
+            
+            <Flex gap={spacing.xs} style={{ marginTop: spacing.md }}>
+              <Button style={{ flex: 1, padding: spacing.md, borderRadius: borderRadius.md, background: colors.primary }} onClick={() => {
                 setEditingItem(null);
                 setShowAddForm(true);
-              }}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Item
-            </Button>
-            <Button variant="outline" className="border-emerald-200 text-emerald-600">
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Start Shopping
-            </Button>
-          </div>
-          
-          <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>{editingItem ? 'Edit Item' : 'Add New Item'}</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 py-2">
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Item Name</label>
+              }}>
+                <Plus size={20} style={{ marginRight: spacing.xs }} />
+                Add Item
+              </Button>
+              <Button variant="outline" style={{ padding: spacing.md, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}>
+                <ShoppingCart size={20} style={{ marginRight: spacing.xs }} />
+                Start Shopping
+              </Button>
+            </Flex>
+            
+            <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
+              <DialogContent style={{ maxWidth: '400px' }}>
+                <DialogHeader>
+                  <DialogTitle>{editingItem ? 'Edit Item' : 'Add New Item'}</DialogTitle>
+                </DialogHeader>
+                <Flex direction="column" gap={spacing.md} style={{ padding: spacing.md }}>
                   <Input 
-                    placeholder="E.g., Apples" 
-                    className="border-emerald-200" 
+                    placeholder="Item Name" 
+                    style={{ padding: spacing.xs, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}
                     defaultValue={editingItem?.name || ''}
                   />
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <label className="text-sm font-medium mb-1 block">Category</label>
-                    <Select defaultValue={editingItem?.category?.toLowerCase() || 'produce'}>
-                      <SelectTrigger className="border-emerald-200">
-                        <SelectValue placeholder="Select category" />
+                  <Flex gap={spacing.xs}>
+                    <Select value={editingItem?.category?.toLowerCase() || 'produce'} onChange={(value) => {
+                      if (editingItem) {
+                        setEditingItem({ ...editingItem, category: value });
+                      }
+                    }} style={{ flex: 1, padding: spacing.xs, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Category" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="produce">Produce</SelectItem>
@@ -339,29 +287,24 @@ export default function SmartShoppingList() {
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-                  <div className="flex-1">
-                    <label className="text-sm font-medium mb-1 block">Quantity</label>
                     <Input 
-                      placeholder="E.g., 6 or 2 lbs" 
-                      className="border-emerald-200" 
+                      placeholder="Quantity" 
+                      style={{ padding: spacing.xs, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}
                       defaultValue={editingItem?.quantity || ''}
                     />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Notes (Optional)</label>
+                  </Flex>
                   <Input 
-                    placeholder="E.g., Organic if possible" 
-                    className="border-emerald-200" 
+                    placeholder="Notes (Optional)" 
+                    style={{ padding: spacing.xs, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}
                     defaultValue={editingItem?.note || ''}
                   />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Priority</label>
-                  <Select defaultValue={editingItem?.priority || 'medium'}>
-                    <SelectTrigger className="border-emerald-200">
-                      <SelectValue placeholder="Select priority" />
+                  <Select value={editingItem?.priority || 'medium'} onChange={(value) => {
+                    if (editingItem) {
+                      setEditingItem({ ...editingItem, priority: value });
+                    }
+                  }} style={{ padding: spacing.xs, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Priority" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="high">High</SelectItem>
@@ -369,180 +312,151 @@ export default function SmartShoppingList() {
                       <SelectItem value="low">Low</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="flex gap-2">
-                  {editingItem && (
-                    <Button 
-                      variant="outline" 
-                      className="flex-1 border-rose-200 text-rose-600 hover:bg-rose-50"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
+                  <Flex gap={spacing.xs}>
+                    {editingItem && <Button variant="outline" style={{ flex: 1, padding: spacing.xs, borderRadius: borderRadius.md, border: `1px solid ${colors.danger}`, color: colors.danger }} onClick={() => {
+                      setItems(items.filter(item => item.id !== editingItem.id));
+                      setEditingItem(null);
+                      setShowAddForm(false);
+                    }}>
+                      <Trash2 size={20} style={{ marginRight: spacing.xs }} />
                       Delete
+                    </Button>}
+                    <Button style={{ flex: 1, padding: spacing.xs, borderRadius: borderRadius.md, background: colors.primary }} onClick={() => {
+                      if (editingItem) {
+                        setItems(items.map(item => item.id === editingItem.id ? editingItem : item));
+                      } else {
+                        setItems([...items, { id: items.length + 1, name: '', category: 'produce', quantity: '', checked: false, note: '', priority: 'medium' }]);
+                      }
+                      setEditingItem(null);
+                      setShowAddForm(false);
+                    }}>
+                      {editingItem ? 'Update Item' : 'Add to List'}
                     </Button>
-                  )}
-                  <Button 
-                    className={`bg-emerald-500 hover:bg-emerald-600 ${editingItem ? 'flex-1' : 'w-full'}`}
-                  >
-                    {editingItem ? 'Update Item' : 'Add to List'}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </TabsContent>
-        
-        <TabsContent value="frequent" className="mt-4 space-y-4">
-          <Card className="bg-white/80 backdrop-blur-sm border border-emerald-100 shadow-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-semibold">Frequently Bought</CardTitle>
-              <p className="text-sm text-gray-500">Items you purchase regularly</p>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {mockFrequentItems.map((item, index) => (
-                  <div 
-                    key={index}
-                    className="p-3 border border-gray-100 rounded-md bg-white flex justify-between items-center"
-                  >
-                    <div>
-                      <h4 className="font-medium text-gray-900">{item.name}</h4>
-                      <p className="text-xs text-gray-500">
-                        {item.category}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-blue-100 text-blue-800">
-                        <Clock className="h-3 w-3 mr-1" />
+                  </Flex>
+                </Flex>
+              </DialogContent>
+            </Dialog>
+          </TabsContent>
+          
+          <TabsContent value="frequent" style={{ marginTop: spacing.md }}>
+            <Card style={{ padding: spacing.md, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}>
+              <CardHeader>
+                <CardTitle>Frequently Bought</CardTitle>
+                <Text variant="body2" color={colors.textSecondary}>Items you purchase regularly</Text>
+              </CardHeader>
+              <CardContent>
+                <Flex direction="column" gap={spacing.md}>
+                  {mockFrequentItems.map((item, index) => (
+                    <Flex key={index} align="center" gap={spacing.xs} style={{ padding: spacing.xs, borderRadius: borderRadius.md, background: colors.backgroundLight }}>
+                      <Text variant="body1" color={colors.textPrimary}>{item.name}</Text>
+                      <Text variant="body2" color={colors.textSecondary}>{item.category}</Text>
+                      <Badge color="primary" style={{ marginLeft: 'auto' }}>
+                        <Clock size={15} style={{ marginRight: spacing.xs }} />
                         {item.frequency}
                       </Badge>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        className="h-7 w-7 p-0 text-emerald-500"
-                      >
-                        <Plus className="h-4 w-4" />
+                      <Button variant="ghost" size="sm" style={{ padding: spacing.xs, borderRadius: borderRadius.md }}>
+                        <Plus size={20} />
                       </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-4 border-t border-gray-100 pt-4">
-                <h4 className="font-medium text-gray-900 mb-3">Shopping History</h4>
-                <div className="space-y-2">
-                  {mockShoppingHistory.map((trip, index) => (
-                    <div 
-                      key={index}
-                      className="p-2 border border-gray-100 rounded-md bg-white flex justify-between items-center"
-                    >
-                      <div>
-                        <h4 className="font-medium text-gray-900">{trip.store}</h4>
-                        <p className="text-xs text-gray-500">
-                          {trip.date} • {trip.items} items
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-gray-900">${trip.total.toFixed(2)}</p>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="h-7 w-7 p-0 text-gray-400"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
+                    </Flex>
                   ))}
-                </div>
-              </div>
-              
-              <div className="mt-4 pt-3 border-t border-gray-100">
-                <div className="flex items-start p-3 bg-emerald-50 rounded-md">
-                  <BarChart className="h-5 w-5 text-emerald-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm text-gray-700 mb-1">
-                      <span className="font-medium">Shopping Insights</span>
-                    </p>
-                    <p className="text-xs text-gray-600 mb-2">
-                      Based on your history, you shop for groceries weekly. Your average spending is $62.50 per trip.
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="text-xs h-7 border-emerald-200 text-emerald-700"
-                    >
-                      View Detailed Analytics
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="stores" className="mt-4 space-y-4">
-          <Card className="bg-white/80 backdrop-blur-sm border border-emerald-100 shadow-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-semibold">Recommended Stores</CardTitle>
-              <p className="text-sm text-gray-500">Based on your current shopping list</p>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {mockStoreSuggestions.map((store, index) => (
-                  <div 
-                    key={index}
-                    className="p-3 border border-gray-100 rounded-md bg-white"
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className="font-medium text-gray-900">{store.name}</h4>
-                      <Badge className="bg-blue-100 text-blue-800">
+                </Flex>
+                
+                <Divider style={{ margin: spacing.md }} />
+                
+                <Text variant="h3" color={colors.textPrimary} style={{ marginBottom: spacing.xs }}>Shopping History</Text>
+                <Flex direction="column" gap={spacing.md}>
+                  {mockShoppingHistory.map((trip, index) => (
+                    <Flex key={index} align="center" gap={spacing.xs} style={{ padding: spacing.xs, borderRadius: borderRadius.md, background: colors.backgroundLight }}>
+                      <Text variant="body1" color={colors.textPrimary}>{trip.store}</Text>
+                      <Text variant="body2" color={colors.textSecondary}>{trip.date} • {trip.items} items</Text>
+                      <Text variant="body1" color={colors.textPrimary} style={{ marginLeft: 'auto' }}>${trip.total.toFixed(2)}</Text>
+                      <Button variant="ghost" size="sm" style={{ padding: spacing.xs, borderRadius: borderRadius.md }}>
+                        <ExternalLink size={20} />
+                      </Button>
+                    </Flex>
+                  ))}
+                </Flex>
+                
+                <Divider style={{ margin: spacing.md }} />
+                
+                <Flex align="center" gap={spacing.xs} style={{ padding: spacing.xs, borderRadius: borderRadius.md, background: colors.backgroundLight }}>
+                  <BarChart size={20} style={{ marginRight: spacing.xs }} />
+                  <Text variant="body2" color={colors.textSecondary}>Shopping Insights</Text>
+                  <Text variant="body2" color={colors.textSecondary} style={{ marginLeft: 'auto' }}>
+                    Based on your history, you shop for groceries weekly. Your average spending is $62.50 per trip.
+                  </Text>
+                  <Button variant="outline" size="sm" style={{ padding: spacing.xs, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}>
+                    View Detailed Analytics
+                  </Button>
+                </Flex>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="stores" style={{ marginTop: spacing.md }}>
+            <Card style={{ padding: spacing.md, borderRadius: borderRadius.md, border: `1px solid ${colors.border}` }}>
+              <CardHeader>
+                <CardTitle>Recommended Stores</CardTitle>
+                <Text variant="body2" color={colors.textSecondary}>Based on your current shopping list</Text>
+              </CardHeader>
+              <CardContent>
+                <Flex direction="column" gap={spacing.md}>
+                  {mockStoreSuggestions.map((store, index) => (
+                    <Flex key={index} align="center" gap={spacing.xs} style={{ padding: spacing.xs, borderRadius: borderRadius.md, background: colors.backgroundLight }}>
+                      <Text variant="body1" color={colors.textPrimary}>{store.name}</Text>
+                      <Badge color="primary" style={{ marginLeft: 'auto' }}>
                         {store.distance}
                       </Badge>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div>
-                        <div className="flex justify-between items-center text-xs mb-1">
-                          <span className="text-gray-600">Price Match</span>
-                          <span className="text-gray-900 font-medium">{store.priceMatch}%</span>
-                        </div>
-                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-emerald-500 rounded-full"
-                            style={{ width: `${store.priceMatch}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between items-center text-xs mb-1">
-                          <span className="text-gray-600">Item Availability</span>
-                          <span className="text-gray-900 font-medium">{store.stockMatch}%</span>
-                        </div>
-                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-blue-500 rounded-full"
-                            style={{ width: `${store.stockMatch}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-3 flex justify-end">
-                      <Button 
-                        size="sm"
-                        className="text-xs bg-emerald-500 hover:bg-emerald-600"
-                      >
+                      <Flex direction="column" style={{ marginLeft: spacing.md }}>
+                        <Flex align="center" gap={spacing.xs} style={{ marginBottom: spacing.xs }}>
+                          <Text variant="body2" color={colors.textSecondary}>Price Match</Text>
+                          <Text variant="body1" color={colors.textPrimary}>{store.priceMatch}%</Text>
+                        </Flex>
+                        <Flex align="center" gap={spacing.xs}>
+                          <Text variant="body2" color={colors.textSecondary}>Item Availability</Text>
+                          <Text variant="body1" color={colors.textPrimary}>{store.stockMatch}%</Text>
+                        </Flex>
+                      </Flex>
+                      <Button size="sm" style={{ padding: spacing.xs, borderRadius: borderRadius.md, background: colors.primary, marginLeft: 'auto' }}>
                         Get Directions
                       </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+                    </Flex>
+                  ))}
+                </Flex>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </Flex>
+      
+      <BottomNavigation>
+        <BottomNavigation.Item 
+          icon={<Home size={20} />} 
+          label="Home" 
+          onClick={() => navigate('/')} 
+        />
+        <BottomNavigation.Item 
+          icon={<Book size={20} />} 
+          label="Recipes" 
+          onClick={() => navigate('/recipes')} 
+        />
+        <BottomNavigation.Item 
+          icon={<ScanLine size={20} />} 
+          label="Scan" 
+          onClick={() => navigate('/scan')} 
+        />
+        <BottomNavigation.Item 
+          icon={<ShoppingCart size={20} />} 
+          label="Shopping" 
+          isActive
+          onClick={() => navigate('/shopping')} 
+        />
+        <BottomNavigation.Item 
+          icon={<User size={20} />} 
+          label="More" 
+          onClick={() => navigate('/more')} 
+        />
+      </BottomNavigation>
+    </Container>
   );
 }
